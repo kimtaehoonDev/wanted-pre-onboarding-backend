@@ -1,8 +1,10 @@
 package com.kimtaehoondev.board.post.presentation;
 
 import com.kimtaehoondev.board.exception.MemberNotFoundException;
+import com.kimtaehoondev.board.exception.PostNotFoundException;
 import com.kimtaehoondev.board.post.application.PostService;
 import com.kimtaehoondev.board.post.application.dto.PostWriteServiceRequestDto;
+import com.kimtaehoondev.board.post.application.dto.response.PostDetailDto;
 import com.kimtaehoondev.board.post.application.dto.response.PostSummaryDto;
 import com.kimtaehoondev.board.post.presentation.dto.PostWriteRequestDto;
 import com.kimtaehoondev.board.post.presentation.pageable.PageRequestFactory;
@@ -18,6 +20,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,5 +67,16 @@ public class PostController {
         Pageable pageable = pageRequestFactory.make(page);
         List<PostSummaryDto> posts = postService.getPostsByPage(pageable);
         return ResponseEntity.ok(posts);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getPost(@PathVariable(name = "id") Long postId) {
+        try {
+            PostDetailDto post = postService.getPost(postId);
+            return ResponseEntity.ok(post);
+        } catch (PostNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+
     }
 }

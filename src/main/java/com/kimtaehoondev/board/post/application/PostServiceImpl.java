@@ -3,6 +3,7 @@ package com.kimtaehoondev.board.post.application;
 import com.kimtaehoondev.board.exception.MemberNotFoundException;
 import com.kimtaehoondev.board.member.domain.Member;
 import com.kimtaehoondev.board.member.domain.repository.MemberRepository;
+import com.kimtaehoondev.board.post.application.dto.response.PostDetailDto;
 import com.kimtaehoondev.board.post.application.dto.response.PostSummaryDto;
 import com.kimtaehoondev.board.post.domain.Post;
 import com.kimtaehoondev.board.post.domain.PostRepository;
@@ -33,6 +34,11 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostSummaryDto> getPostsByPage(Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public PostDetailDto getPost(Long postId) {
         return null;
     }
 }
