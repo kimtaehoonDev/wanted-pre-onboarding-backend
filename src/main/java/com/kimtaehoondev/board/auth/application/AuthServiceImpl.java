@@ -1,6 +1,7 @@
 package com.kimtaehoondev.board.auth.application;
 
 import com.kimtaehoondev.board.auth.presentation.dto.SignUpRequestDto;
+import com.kimtaehoondev.board.exception.EmailDuplicatedException;
 import com.kimtaehoondev.board.member.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Long signUp(SignUpRequestDto dto) {
+        memberRepository.findByEmail(dto.getEmail())
+            .ifPresent(x -> {
+                throw new EmailDuplicatedException();
+            });
         return 100L;
     }
 }

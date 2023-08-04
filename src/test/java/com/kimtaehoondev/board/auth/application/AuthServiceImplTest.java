@@ -1,7 +1,12 @@
 package com.kimtaehoondev.board.auth.application;
 
+import static org.mockito.Mockito.when;
+
 import com.kimtaehoondev.board.auth.presentation.dto.SignUpRequestDto;
+import com.kimtaehoondev.board.exception.EmailDuplicatedException;
+import com.kimtaehoondev.board.member.domain.Member;
 import com.kimtaehoondev.board.member.domain.repository.MemberRepository;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,4 +37,21 @@ class AuthServiceImplTest {
         //then
         Assertions.assertThat(foundedId).isEqualTo(savedId);
     }
+
+    @Test
+    @DisplayName("회원가입 실패 - 이메일 중복")
+    void emailDuplicated() {
+        // given
+        long savedId = 100L;
+        String email = "k@naver.com";
+        SignUpRequestDto dto = new SignUpRequestDto(email, "12345678");
+        when(memberRepository.findByEmail(email))
+            .thenReturn(Optional.of(Member.create(null, null)));
+
+        // then
+        Assertions.assertThatThrownBy(() -> authService.signUp(dto))
+            .isInstanceOf(EmailDuplicatedException.class);
+    }
+
+
 }
