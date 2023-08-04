@@ -77,6 +77,5 @@ public class PostController {
         } catch (PostNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
-
     }
 }

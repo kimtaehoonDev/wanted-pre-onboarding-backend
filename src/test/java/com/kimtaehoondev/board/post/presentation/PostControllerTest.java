@@ -13,8 +13,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kimtaehoondev.board.exception.MemberNotFoundException;
+import com.kimtaehoondev.board.exception.PostNotFoundException;
 import com.kimtaehoondev.board.post.application.PostService;
 import com.kimtaehoondev.board.post.application.dto.PostWriteServiceRequestDto;
+import com.kimtaehoondev.board.post.application.dto.response.PostDetailDto;
 import com.kimtaehoondev.board.post.presentation.dto.PostWriteRequestDto;
 import com.kimtaehoondev.board.post.presentation.pageable.PageRequestFactory;
 import java.util.List;
@@ -146,10 +148,45 @@ class PostControllerTest {
     }
 
     // 게시물 단건 읽기
+    @Test
+    @WithMockUser
+    @DisplayName("단건 게시물 조회에 성공한다")
+    void searchAlone() throws Exception {
+        Long postId = 1L;
+
+        PostDetailDto dto = makePostDetailDto();
+        when(postService.getPost(postId)).thenReturn(dto);
+        mockMvc.perform(get("/api/posts/" + postId).with(csrf()))
+            .andExpect(status().isOk());
+    }
+
 
     // 게시물 수정
 
     // 게시물 삭제
 
 
+    private PostDetailDto makePostDetailDto() {
+        return new PostDetailDto() {
+            @Override
+            public Long getId() {
+                return 1L;
+            }
+
+            @Override
+            public String getTitle() {
+                return "제목";
+            }
+
+            @Override
+            public String getContents() {
+                return "내용ㅇ";
+            }
+
+            @Override
+            public String getMemberEmail() {
+                return "k@naver.com";
+            }
+        };
+    }
 }
