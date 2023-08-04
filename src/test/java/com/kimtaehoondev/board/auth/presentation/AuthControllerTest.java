@@ -15,6 +15,8 @@ import com.kimtaehoondev.board.auth.presentation.dto.SignUpRequestDto;
 import com.kimtaehoondev.board.exception.EmailDuplicatedException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -58,6 +60,19 @@ class AuthControllerTest {
 
         doThrow(EmailDuplicatedException.class)
             .when(authService).signUp(any(SignUpRequestDto.class));
+
+        mockMvc.perform(post("/api/auth/signup").with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().isBadRequest());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"naver.com","d","com"})
+    @WithMockUser
+    @DisplayName("회원가입 실패 - 이메일에 @이 없을 때")
+    void noGolbaengiInEmail(String email) throws Exception {
+        SignUpRequestDto dto = new SignUpRequestDto(email, "123");
 
         mockMvc.perform(post("/api/auth/signup").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
