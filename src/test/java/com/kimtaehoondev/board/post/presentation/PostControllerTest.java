@@ -14,6 +14,8 @@ import com.kimtaehoondev.board.exception.MemberNotFoundException;
 import com.kimtaehoondev.board.post.application.PostService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -33,14 +35,34 @@ class PostControllerTest {
     ObjectMapper objectMapper;
 
     // 게시물 생성
-    @Test
-    @DisplayName("게시물을 생성한다")
+    @ParameterizedTest
+    @ValueSource(strings = {"title", "@", " 1 ", "sakljfhajkshfajkfhjakhfjk"})
+    @DisplayName("게시물 생성 성공 - 제목이 있는 경우")
     @WithMockUser
-    void writePost() throws Exception {
+    void writePostHavingTitle(String title) throws Exception {
         Long writerId = 1229L;
         Long savedId = 123L;
         PostWriteServiceRequestDto dto =
-            new PostWriteServiceRequestDto("title", "contents", writerId);
+            new PostWriteServiceRequestDto(title, "contents", writerId);
+
+        when(postService.writePost(any(PostWriteServiceRequestDto.class))).thenReturn(savedId);
+
+        mockMvc.perform(post("/api/posts").with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().isCreated())
+            .andExpect(header().string("Location", endsWith("/api/posts/" + savedId)));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"contents", "@", " 1 ", "sakljfhajkshfajkfhjakhfjk"})
+    @DisplayName("게시물 생성 성공 - 내용이 있는 경우")
+    @WithMockUser
+    void writePostHavingContents(String contents) throws Exception {
+        Long writerId = 1229L;
+        Long savedId = 123L;
+        PostWriteServiceRequestDto dto =
+            new PostWriteServiceRequestDto("title", contents, writerId);
 
         when(postService.writePost(any(PostWriteServiceRequestDto.class))).thenReturn(savedId);
 
@@ -67,11 +89,12 @@ class PostControllerTest {
             .andExpect(status().isUnauthorized());
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = {"", " ", "  "})
     @WithMockUser
     @DisplayName("제목이 비어있으면, 게시물 등록에 실패한다")
-    void noTitle() throws Exception {
-        PostWriteRequestDto dto = new PostWriteRequestDto("", "contents");
+    void noTitle(String title) throws Exception {
+        PostWriteRequestDto dto = new PostWriteRequestDto(title, "contents");
 
         mockMvc.perform(post("/api/posts").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -79,11 +102,12 @@ class PostControllerTest {
             .andExpect(status().isBadRequest());
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = {"", " ", "  "})
     @WithMockUser
     @DisplayName("내용이 비어있으면, 게시물 등록에 실패한다")
-    void noContents() throws Exception {
-        PostWriteRequestDto dto = new PostWriteRequestDto("title", "");
+    void noContents(String contents) throws Exception {
+        PostWriteRequestDto dto = new PostWriteRequestDto("title", contents);
 
         mockMvc.perform(post("/api/posts").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
