@@ -2,6 +2,7 @@ package com.kimtaehoondev.board.auth.application;
 
 import com.kimtaehoondev.board.auth.presentation.dto.SignUpRequestDto;
 import com.kimtaehoondev.board.exception.EmailDuplicatedException;
+import com.kimtaehoondev.board.member.domain.Member;
 import com.kimtaehoondev.board.member.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,8 @@ public class AuthServiceImpl implements AuthService {
             .ifPresent(x -> {
                 throw new EmailDuplicatedException();
             });
-        return 100L;
+
+        Member member = dto.toEntity();
+        return memberRepository.save(member);
     }
 }

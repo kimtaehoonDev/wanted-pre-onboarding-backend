@@ -1,5 +1,6 @@
 package com.kimtaehoondev.board.auth.presentation.dto;
 
+import com.kimtaehoondev.board.member.domain.Member;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -13,4 +14,8 @@ public class SignUpRequestDto {
 
     @Size(min = 8)
     private final String pwd;
+
+    public Member toEntity() {
+        return Member.create(email, pwd);
+    }
 }

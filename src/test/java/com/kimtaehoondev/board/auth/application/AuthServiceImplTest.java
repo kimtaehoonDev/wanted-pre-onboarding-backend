@@ -29,13 +29,18 @@ class AuthServiceImplTest {
     void signUp() {
         //given
         long savedId = 100L;
-        SignUpRequestDto dto = new SignUpRequestDto("k@naver.com", "12345678");
+        String email = "k@naver.com";
+        SignUpRequestDto dto = new SignUpRequestDto(email, "12345678");
+        when(memberRepository.save(any(Member.class)))
+            .thenReturn(savedId);
 
         //when
         Long foundedId = authService.signUp(dto);
 
         //then
         Assertions.assertThat(foundedId).isEqualTo(savedId);
+        verify(memberRepository, times(1)).findByEmail(email);
+        verify(memberRepository, times(1)).save(any(Member.class));
     }
 
     @Test
