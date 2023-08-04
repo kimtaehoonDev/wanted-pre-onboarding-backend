@@ -5,7 +5,7 @@ import com.kimtaehoondev.board.member.domain.Member;
 import com.kimtaehoondev.board.member.domain.repository.MemberRepository;
 import com.kimtaehoondev.board.post.domain.Post;
 import com.kimtaehoondev.board.post.domain.PostRepository;
-import com.kimtaehoondev.board.post.presentation.PostWriteServiceRequestDto;
+import com.kimtaehoondev.board.post.application.dto.PostWriteServiceRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

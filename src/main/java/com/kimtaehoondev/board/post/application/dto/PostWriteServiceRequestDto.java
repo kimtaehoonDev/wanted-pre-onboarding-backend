@@ -1,4 +1,4 @@
-package com.kimtaehoondev.board.post.presentation;
+package com.kimtaehoondev.board.post.application.dto;
 
 import lombok.Getter;
 

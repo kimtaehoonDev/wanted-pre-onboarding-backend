@@ -2,6 +2,8 @@ package com.kimtaehoondev.board.post.presentation;
 
 import com.kimtaehoondev.board.exception.MemberNotFoundException;
 import com.kimtaehoondev.board.post.application.PostService;
+import com.kimtaehoondev.board.post.application.dto.PostWriteServiceRequestDto;
+import com.kimtaehoondev.board.post.presentation.dto.PostWriteRequestDto;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;

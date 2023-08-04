@@ -1,4 +1,4 @@
-package com.kimtaehoondev.board.post.presentation;
+package com.kimtaehoondev.board.post.presentation.dto;
 
 import javax.validation.constraints.NotBlank;
 import lombok.Getter;
