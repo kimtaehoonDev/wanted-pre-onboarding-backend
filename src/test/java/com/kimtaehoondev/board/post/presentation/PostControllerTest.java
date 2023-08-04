@@ -16,6 +16,7 @@ import com.kimtaehoondev.board.exception.MemberNotFoundException;
 import com.kimtaehoondev.board.post.application.PostService;
 import com.kimtaehoondev.board.post.application.dto.PostWriteServiceRequestDto;
 import com.kimtaehoondev.board.post.presentation.dto.PostWriteRequestDto;
+import com.kimtaehoondev.board.post.presentation.pageable.PageRequestFactory;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

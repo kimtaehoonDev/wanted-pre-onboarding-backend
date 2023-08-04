@@ -5,6 +5,7 @@ import com.kimtaehoondev.board.post.application.PostService;
 import com.kimtaehoondev.board.post.application.dto.PostWriteServiceRequestDto;
 import com.kimtaehoondev.board.post.application.dto.response.PostSummaryDto;
 import com.kimtaehoondev.board.post.presentation.dto.PostWriteRequestDto;
+import com.kimtaehoondev.board.post.presentation.pageable.PageRequestFactory;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;

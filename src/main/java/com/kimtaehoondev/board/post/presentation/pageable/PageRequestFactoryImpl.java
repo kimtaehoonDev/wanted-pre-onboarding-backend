@@ -1,4 +1,4 @@
-package com.kimtaehoondev.board.post.presentation;
+package com.kimtaehoondev.board.post.presentation.pageable;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
