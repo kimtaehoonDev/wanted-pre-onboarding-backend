@@ -67,6 +67,29 @@ class PostControllerTest {
             .andExpect(status().isUnauthorized());
     }
 
+    @Test
+    @WithMockUser
+    @DisplayName("제목이 비어있으면, 게시물 등록에 실패한다")
+    void noTitle() throws Exception {
+        PostWriteRequestDto dto = new PostWriteRequestDto("", "contents");
+
+        mockMvc.perform(post("/api/posts").with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("내용이 비어있으면, 게시물 등록에 실패한다")
+    void noContents() throws Exception {
+        PostWriteRequestDto dto = new PostWriteRequestDto("title", "");
+
+        mockMvc.perform(post("/api/posts").with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().isBadRequest());
+    }
 
     // 게시물 페이징
 

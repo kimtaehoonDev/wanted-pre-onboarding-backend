@@ -3,10 +3,16 @@ package com.kimtaehoondev.board.post.presentation;
 import com.kimtaehoondev.board.exception.MemberNotFoundException;
 import com.kimtaehoondev.board.post.application.PostService;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -20,7 +26,15 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping
-    public ResponseEntity<?> writePost(PostWriteRequestDto dto) {
+    public ResponseEntity<?> writePost(@RequestBody @Validated PostWriteRequestDto dto,
+                                       BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            for (FieldError error : bindingResult.getFieldErrors()) {
+                errors.put(error.getField(), error.getDefaultMessage());
+            }
+            return ResponseEntity.badRequest().body(errors);
+        }
         try {
             PostWriteServiceRequestDto serviceDto =
                 new PostWriteServiceRequestDto(dto.getTitle(), dto.getContents(), memberId);
