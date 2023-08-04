@@ -1,6 +1,7 @@
 package com.kimtaehoondev.board.post.presentation;
 
-import static org.mockito.ArgumentMatchers.endsWith;
+import static org.hamcrest.Matchers.endsWith;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -34,10 +35,12 @@ class PostControllerTest {
     @DisplayName("게시물 생성")
     @WithMockUser
     void writePost() throws Exception {
-        PostWriteRequestDto dto = new PostWriteRequestDto("title", "contents");
+        Long writerId = 1229L;
         Long savedId = 123L;
+        PostWriteServiceRequestDto dto =
+            new PostWriteServiceRequestDto("title", "contents", writerId);
 
-        when(postService.writePost()).thenReturn(savedId);
+        when(postService.writePost(any(PostWriteServiceRequestDto.class))).thenReturn(savedId);
 
         mockMvc.perform(post("/api/posts").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
