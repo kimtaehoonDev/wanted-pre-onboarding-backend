@@ -35,11 +35,30 @@ class AuthControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = {"k@naver.com","@","@@@@", "@가@" ,"@rk", ".@"})
     @WithMockUser
-    @DisplayName("회원가입 성공")
-    void signupTest() throws Exception {
-        SignUpRequestDto dto = new SignUpRequestDto("k@naver.com", "123");
+    @DisplayName("회원가입 성공 - 이메일에 @가 있는 경우")
+    void hasGolbaengiInEmail(String email) throws Exception {
+        SignUpRequestDto dto = new SignUpRequestDto(email, "12345678");
+        Long savedId = 10L;
+
+        when(authService.signUp(any(SignUpRequestDto.class)))
+            .thenReturn(savedId);
+
+        mockMvc.perform(post("/api/auth/signup").with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().isCreated())
+            .andExpect(header().string("Location", endsWith("/api/members/" + savedId)));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"12345678", "        ", "@@@@@@@@", "dkalsjfaklhfaklhflakhfla"})
+    @WithMockUser
+    @DisplayName("회원가입 성공 - 비밀번호가 8자리 이상인 경우")
+    void successPasswordLong(String pwd) throws Exception {
+        SignUpRequestDto dto = new SignUpRequestDto("k@naver.com", pwd);
         Long savedId = 10L;
 
         when(authService.signUp(any(SignUpRequestDto.class)))
@@ -79,4 +98,18 @@ class AuthControllerTest {
                 .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().isBadRequest());
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"1","11","123","       ","1234567", " 12345 "})
+    @WithMockUser
+    @DisplayName("회원가입 실패 - 비밀번호의 길이가 8보다 짧을 때")
+    void passwordShort(String pwd) throws Exception {
+        SignUpRequestDto dto = new SignUpRequestDto("k@naver.com", pwd);
+
+        mockMvc.perform(post("/api/auth/signup").with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto))).
+            andExpect(status().isBadRequest());
+    }
+
 }
