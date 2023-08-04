@@ -3,19 +3,24 @@ package com.kimtaehoondev.board.post.presentation;
 import com.kimtaehoondev.board.exception.MemberNotFoundException;
 import com.kimtaehoondev.board.post.application.PostService;
 import com.kimtaehoondev.board.post.application.dto.PostWriteServiceRequestDto;
+import com.kimtaehoondev.board.post.domain.Post;
 import com.kimtaehoondev.board.post.presentation.dto.PostWriteRequestDto;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -26,6 +31,7 @@ public class PostController {
     public static final Long memberId = 123L; // TODO 로그인 구현 후 변경
 
     private final PostService postService;
+    private final PageRequestFactory pageRequestFactory;
 
     @PostMapping
     public ResponseEntity<?> writePost(@RequestBody @Validated PostWriteRequestDto dto,
@@ -50,5 +56,12 @@ public class PostController {
         } catch (MemberNotFoundException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getPostsByPage(@RequestParam(required = false) Integer page) {
+        Pageable pageable = pageRequestFactory.make(page);
+        List<Post> posts = postService.getPostsByPage(pageable);
+        return ResponseEntity.ok(posts);
     }
 }

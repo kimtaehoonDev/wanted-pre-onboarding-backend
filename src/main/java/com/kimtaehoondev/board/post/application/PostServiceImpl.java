@@ -6,7 +6,9 @@ import com.kimtaehoondev.board.member.domain.repository.MemberRepository;
 import com.kimtaehoondev.board.post.domain.Post;
 import com.kimtaehoondev.board.post.domain.PostRepository;
 import com.kimtaehoondev.board.post.application.dto.PostWriteServiceRequestDto;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,5 +28,10 @@ public class PostServiceImpl implements PostService {
         Post post = Post.create(dto.getTitle(), dto.getContents(), writer);
         Post savedPost = postRepository.save(post);
         return savedPost.getId();
+    }
+
+    @Override
+    public List<Post> getPostsByPage(Pageable pageable) {
+        return null;
     }
 }

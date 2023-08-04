@@ -5,8 +5,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +16,7 @@ import com.kimtaehoondev.board.exception.MemberNotFoundException;
 import com.kimtaehoondev.board.post.application.PostService;
 import com.kimtaehoondev.board.post.application.dto.PostWriteServiceRequestDto;
 import com.kimtaehoondev.board.post.presentation.dto.PostWriteRequestDto;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,14 +24,20 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(PostController.class)
 class PostControllerTest {
+    public static final int DEFAULT_SIZE = 5;
+
     @MockBean
     PostService postService;
+
+    @MockBean
+    PageRequestFactory pageRequestFactory;
 
     @Autowired
     MockMvc mockMvc;
@@ -118,6 +127,22 @@ class PostControllerTest {
     }
 
     // 게시물 페이징
+    @Test
+    @WithMockUser
+    @DisplayName("페이지 정보를 입력해 게시물들을 가져온다")
+    void paging() throws Exception {
+        //given
+        // 페이지를 만드는 공장에서 무조건 pageable 인스턴스를 반환하게 한다
+        int page = 2;
+        PageRequest pageable = PageRequest.of(page, DEFAULT_SIZE);
+        when(pageRequestFactory.make(page)).thenReturn(pageable);
+        when(postService.getPostsByPage(pageable)).thenReturn(List.of());
+
+
+        mockMvc.perform(get("/api/posts?page=" + page).with(csrf()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").isArray()); // 최상단이 배열임을 확인한다
+    }
 
     // 게시물 단건 읽기
 
