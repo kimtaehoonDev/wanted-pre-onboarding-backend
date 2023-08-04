@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthServiceImpl implements AuthService {
     private final MemberRepository memberRepository;
 
-
+    @Transactional
     @Override
     public Long signUp(SignUpRequestDto dto) {
         memberRepository.findByEmail(dto.getEmail())
