@@ -1,0 +1,58 @@
+package com.kimtaehoondev.board.post.presentation;
+
+import static org.mockito.ArgumentMatchers.endsWith;
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kimtaehoondev.board.post.application.PostService;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+
+@WebMvcTest(PostController.class)
+class PostControllerTest {
+    @MockBean
+    PostService postService;
+
+    @Autowired
+    MockMvc mockMvc;
+
+    @Autowired
+    ObjectMapper objectMapper;
+
+    // 게시물 생성
+    @Test
+    @DisplayName("게시물 생성")
+    @WithMockUser
+    void writePost() throws Exception {
+        PostWriteRequestDto dto = new PostWriteRequestDto("title", "contents");
+        Long savedId = 123L;
+
+        when(postService.writePost()).thenReturn(savedId);
+
+        mockMvc.perform(post("/api/posts").with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().isCreated())
+            .andExpect(header().string("Location", endsWith("/api/posts/" + savedId)));
+    }
+
+    // 게시물 페이징
+
+    // 게시물 단건 읽기
+
+    // 게시물 수정
+
+    // 게시물 삭제
+
+
+}
