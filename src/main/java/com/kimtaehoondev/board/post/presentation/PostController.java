@@ -3,7 +3,7 @@ package com.kimtaehoondev.board.post.presentation;
 import com.kimtaehoondev.board.exception.MemberNotFoundException;
 import com.kimtaehoondev.board.post.application.PostService;
 import com.kimtaehoondev.board.post.application.dto.PostWriteServiceRequestDto;
-import com.kimtaehoondev.board.post.domain.Post;
+import com.kimtaehoondev.board.post.application.dto.response.PostSummaryDto;
 import com.kimtaehoondev.board.post.presentation.dto.PostWriteRequestDto;
 import java.net.URI;
 import java.util.HashMap;
@@ -61,7 +61,7 @@ public class PostController {
     @GetMapping
     public ResponseEntity<?> getPostsByPage(@RequestParam(required = false) Integer page) {
         Pageable pageable = pageRequestFactory.make(page);
-        List<Post> posts = postService.getPostsByPage(pageable);
+        List<PostSummaryDto> posts = postService.getPostsByPage(pageable);
         return ResponseEntity.ok(posts);
     }
 }
