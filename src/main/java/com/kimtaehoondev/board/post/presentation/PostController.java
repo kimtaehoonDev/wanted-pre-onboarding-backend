@@ -1,8 +1,10 @@
 package com.kimtaehoondev.board.post.presentation;
 
+import com.kimtaehoondev.board.exception.MemberNotFoundException;
 import com.kimtaehoondev.board.post.application.PostService;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,14 +21,18 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<?> writePost(PostWriteRequestDto dto) {
-        PostWriteServiceRequestDto serviceDto =
-            new PostWriteServiceRequestDto(dto.getTitle(), dto.getContents(), memberId);
-        Long savedId = postService.writePost(serviceDto);
+        try {
+            PostWriteServiceRequestDto serviceDto =
+                new PostWriteServiceRequestDto(dto.getTitle(), dto.getContents(), memberId);
+            Long savedId = postService.writePost(serviceDto);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
-            .replacePath("/api/posts/" + savedId)
-            .build()
-            .toUri();
-        return ResponseEntity.created(location).build();
+            URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
+                .replacePath("/api/posts/" + savedId)
+                .build()
+                .toUri();
+            return ResponseEntity.created(location).build();
+        } catch (MemberNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 }
