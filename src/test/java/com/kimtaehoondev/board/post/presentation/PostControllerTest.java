@@ -160,6 +160,16 @@ class PostControllerTest {
             .andExpect(status().isOk());
     }
 
+    @Test
+    @WithMockUser
+    @DisplayName("게시물이 없으면 단건 게시물 조회에 실패한다")
+    void searchAloneFail() throws Exception {
+        long postId = 1L;
+        doThrow(PostNotFoundException.class)
+            .when(postService).getPost(postId);
+        mockMvc.perform(get("/api/posts/" + postId).with(csrf()))
+            .andExpect(status().isNotFound());
+    }
 
     // 게시물 수정
 
