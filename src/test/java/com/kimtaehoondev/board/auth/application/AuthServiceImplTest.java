@@ -1,5 +1,9 @@
 package com.kimtaehoondev.board.auth.application;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.kimtaehoondev.board.auth.presentation.dto.SignUpRequestDto;
@@ -47,7 +51,6 @@ class AuthServiceImplTest {
     @DisplayName("회원가입 실패 - 이메일 중복")
     void emailDuplicated() {
         // given
-        long savedId = 100L;
         String email = "k@naver.com";
         SignUpRequestDto dto = new SignUpRequestDto(email, "12345678");
         when(memberRepository.findByEmail(email))
@@ -56,6 +59,8 @@ class AuthServiceImplTest {
         // then
         Assertions.assertThatThrownBy(() -> authService.signUp(dto))
             .isInstanceOf(EmailDuplicatedException.class);
+        verify(memberRepository, times(1)).findByEmail(email);
+        verify(memberRepository, never()).save(any(Member.class));
     }
 
 
