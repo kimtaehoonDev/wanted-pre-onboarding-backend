@@ -10,6 +10,7 @@ import com.kimtaehoondev.board.auth.presentation.dto.SignUpRequestDto;
 import com.kimtaehoondev.board.exception.EmailDuplicatedException;
 import com.kimtaehoondev.board.member.domain.Member;
 import com.kimtaehoondev.board.member.domain.repository.MemberRepository;
+import java.lang.reflect.Field;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -30,13 +31,17 @@ class AuthServiceImplTest {
 
     @Test
     @DisplayName("회원가입 성공")
-    void signUp() {
+    void signUp() throws NoSuchFieldException, IllegalAccessException {
         //given
         long savedId = 100L;
         String email = "k@naver.com";
+        String pwd = "123456789";
+
+        Member member = makeMember(savedId, email, pwd);
+
         SignUpRequestDto dto = new SignUpRequestDto(email, "12345678");
         when(memberRepository.save(any(Member.class)))
-            .thenReturn(savedId);
+                .thenReturn(member);
 
         //when
         Long foundedId = authService.signUp(dto);
@@ -64,4 +69,14 @@ class AuthServiceImplTest {
     }
 
 
+    private static Member makeMember(long savedId, String email, String pwd)
+        throws NoSuchFieldException, IllegalAccessException {
+        Member member = Member.create(email, pwd);
+
+        Field idField = Member.class.getDeclaredField("id");
+        idField.setAccessible(true);
+        idField.set(member, savedId);
+
+        return member;
+    }
 }

@@ -23,6 +23,7 @@ public class AuthServiceImpl implements AuthService {
             });
 
         Member member = dto.toEntity();
-        return memberRepository.save(member);
+        Member savedMember = memberRepository.save(member);
+        return savedMember.getId();
     }
 }
