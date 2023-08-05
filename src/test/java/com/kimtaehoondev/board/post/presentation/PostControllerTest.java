@@ -8,6 +8,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -17,8 +18,10 @@ import com.kimtaehoondev.board.exception.MemberNotFoundException;
 import com.kimtaehoondev.board.exception.PostNotFoundException;
 import com.kimtaehoondev.board.exception.UnauthorizedException;
 import com.kimtaehoondev.board.post.application.PostService;
-import com.kimtaehoondev.board.post.application.dto.PostWriteServiceRequestDto;
+import com.kimtaehoondev.board.post.application.dto.request.PostModifyServiceRequestDto;
+import com.kimtaehoondev.board.post.application.dto.request.PostWriteServiceRequestDto;
 import com.kimtaehoondev.board.post.application.dto.response.PostDetailDto;
+import com.kimtaehoondev.board.post.presentation.dto.PostModifyRequestDto;
 import com.kimtaehoondev.board.post.presentation.dto.PostWriteRequestDto;
 import com.kimtaehoondev.board.post.presentation.pageable.PageRequestFactory;
 import java.util.List;
@@ -238,6 +241,23 @@ class PostControllerTest {
             .andExpect(status().isForbidden());
     }
     // 게시물 수정
+    @Test
+    @WithMockUser
+    @DisplayName("게시물을 수정한다")
+    void modifyPost() throws Exception {
+        //given
+        Long postId = 1L;
+        PostModifyRequestDto dto =
+            new PostModifyRequestDto("제목", "내용");
+        when(postService.modifyPost(any(PostModifyServiceRequestDto.class))).thenReturn(postId);
+
+        //when then
+        mockMvc.perform(put("/api/posts/" + postId).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().isOk());
+    }
+
 
     private PostDetailDto makePostDetailDto() {
         return new PostDetailDto() {
