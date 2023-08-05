@@ -41,7 +41,7 @@ public class PostController {
     private final PageRequestFactory pageRequestFactory;
 
     @PostMapping
-    public ResponseEntity<?> writePost(@RequestBody @Validated PostWriteRequestDto dto,
+    public ResponseEntity<Object> writePost(@RequestBody @Validated PostWriteRequestDto dto,
                                        BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
@@ -64,27 +64,27 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getPostsByPage(@RequestParam(required = false) Integer page) {
+    public ResponseEntity<List<PostSummaryDto>> getPostsByPage(@RequestParam(required = false) Integer page) {
         Pageable pageable = pageRequestFactory.make(page);
         List<PostSummaryDto> posts = postService.getPostsByPage(pageable);
         return ResponseEntity.ok(posts);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPost(@PathVariable(name = "id") Long postId) {
+    public ResponseEntity<PostDetailDto> getPost(@PathVariable(name = "id") Long postId) {
         PostDetailDto post = postService.getPost(postId);
         return ResponseEntity.ok(post);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePost(@PathVariable("id") Long postId) {
+    public ResponseEntity<Void> deletePost(@PathVariable("id") Long postId) {
         String email = getEmail();
         postService.deletePost(postId, email);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> modifyPost(@PathVariable("id") Long postId,
+    public ResponseEntity<Long> modifyPost(@PathVariable("id") Long postId,
                                         @RequestBody @Validated PostModifyRequestDto dto) {
         String email = getEmail();
         PostModifyServiceRequestDto serviceDto =
@@ -93,6 +93,7 @@ public class PostController {
         postService.modifyPost(serviceDto);
         return ResponseEntity.ok().body(postId);
     }
+
     private String getEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return ((UserDetails) authentication.getPrincipal()).getUsername();
