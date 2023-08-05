@@ -30,10 +30,7 @@ public class AuthController {
     public ResponseEntity<?> signUp(@RequestBody @Validated SignUpRequestDto dto,
                                     BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            Map<String, String> errors = new HashMap<>();
-            for (FieldError error : bindingResult.getFieldErrors()) {
-                errors.put(error.getField(), error.getDefaultMessage());
-            }
+            Map<String, String> errors = getBindingErrors(bindingResult);
             return ResponseEntity.badRequest().body(errors);
         }
         try {
@@ -54,10 +51,7 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody @Validated LoginRequestDto dto,
                                    BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            Map<String, String> errors = new HashMap<>();
-            for (FieldError error : bindingResult.getFieldErrors()) {
-                errors.put(error.getField(), error.getDefaultMessage());
-            }
+            Map<String, String> errors = getBindingErrors(bindingResult);
             return ResponseEntity.badRequest().body(errors);
         }
 
@@ -68,4 +62,13 @@ public class AuthController {
             return ResponseEntity.badRequest().body("아이디 또는 비밀번호가 잘못되었습니다.");
         }
     }
+
+    private Map<String, String> getBindingErrors(BindingResult bindingResult) {
+        Map<String, String> errors = new HashMap<>();
+        for (FieldError error : bindingResult.getFieldErrors()) {
+            errors.put(error.getField(), error.getDefaultMessage());
+        }
+        return errors;
+    }
+
 }
