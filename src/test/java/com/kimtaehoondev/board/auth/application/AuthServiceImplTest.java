@@ -1,11 +1,13 @@
 package com.kimtaehoondev.board.auth.application;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.kimtaehoondev.board.auth.jwt.JwtTokenProvider;
 import com.kimtaehoondev.board.auth.presentation.dto.SignUpRequestDto;
 import com.kimtaehoondev.board.exception.EmailDuplicatedException;
 import com.kimtaehoondev.board.member.domain.Member;
@@ -19,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -28,6 +31,12 @@ class AuthServiceImplTest {
 
     @Mock
     private MemberRepository memberRepository;
+
+    @Mock
+    private JwtTokenProvider jwtTokenProvider;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @Test
     @DisplayName("회원가입 성공")
@@ -40,6 +49,9 @@ class AuthServiceImplTest {
         Member member = makeMember(savedId, email, pwd);
 
         SignUpRequestDto dto = new SignUpRequestDto(email, "12345678");
+        when(memberRepository.findByEmail(email))
+            .thenReturn(Optional.empty());
+        when(passwordEncoder.encode(anyString())).thenReturn("encodedResult");
         when(memberRepository.save(any(Member.class)))
                 .thenReturn(member);
 
