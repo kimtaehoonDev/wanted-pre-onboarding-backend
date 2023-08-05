@@ -37,7 +37,6 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(PostController.class)
 class PostControllerTest {
     public static final int DEFAULT_SIZE = 5;
-    public static final Long memberId = PostController.memberId;
 
     @MockBean
     PostService postService;
@@ -57,10 +56,10 @@ class PostControllerTest {
     @DisplayName("게시물 생성 성공 - 제목이 있는 경우")
     @WithMockUser
     void writePostHavingTitle(String title) throws Exception {
-        Long writerId = 1229L;
+        String email = "emai@naver.com";
         Long savedId = 123L;
         PostWriteServiceRequestDto dto =
-            new PostWriteServiceRequestDto(title, "contents", writerId);
+            new PostWriteServiceRequestDto(title, "contents", email);
 
         when(postService.writePost(any(PostWriteServiceRequestDto.class))).thenReturn(savedId);
 
@@ -76,10 +75,10 @@ class PostControllerTest {
     @DisplayName("게시물 생성 성공 - 내용이 있는 경우")
     @WithMockUser
     void writePostHavingContents(String contents) throws Exception {
-        Long writerId = 1229L;
+        String email = "emai@naver.com";
         Long savedId = 123L;
         PostWriteServiceRequestDto dto =
-            new PostWriteServiceRequestDto("title", contents, writerId);
+            new PostWriteServiceRequestDto("title", contents, email);
 
         when(postService.writePost(any(PostWriteServiceRequestDto.class))).thenReturn(savedId);
 
@@ -94,9 +93,9 @@ class PostControllerTest {
     @DisplayName("로그인되지 않은 사용자가 게시물을 작성할 때 401 상태를 반환한다")
     @WithMockUser
     void cantWriteUnauthenticatedMember() throws Exception {
-        Long writerId = 1229L;
+        String email = "emai@naver.com";
         PostWriteServiceRequestDto dto =
-            new PostWriteServiceRequestDto("title", "contents", writerId);
+            new PostWriteServiceRequestDto("title", "contents", email);
         doThrow(MemberNotFoundException.class)
             .when(postService).writePost(any(PostWriteServiceRequestDto.class));
 
@@ -182,7 +181,9 @@ class PostControllerTest {
     void deletePost() throws Exception {
         //given
         Long postId = 1L;
-        when(postService.deletePost(1L, memberId)).thenReturn(postId);
+        String email = "emai@naver.com";
+
+        when(postService.deletePost(1L, email)).thenReturn(postId);
 
         //when then
         mockMvc.perform(delete("/api/posts/" + postId).with(csrf()))
@@ -195,8 +196,10 @@ class PostControllerTest {
     void deletePostFailNoPost() throws Exception {
         //given
         Long postId = 1L;
+        String email = "emai@naver.com";
+
         doThrow(PostNotFoundException.class)
-            .when(postService).deletePost(postId, memberId);
+            .when(postService).deletePost(postId, email);
 
         //when then
         mockMvc.perform(delete("/api/posts/" + postId).with(csrf()))
@@ -209,8 +212,10 @@ class PostControllerTest {
     void deletePostFailNoWriter() throws Exception {
         //given
         Long postId = 1L;
+        String email = "emai@naver.com";
+
         doThrow(MemberNotFoundException.class)
-            .when(postService).deletePost(postId, memberId);
+            .when(postService).deletePost(postId, email);
 
         //when then
         mockMvc.perform(delete("/api/posts/" + postId).with(csrf()))
@@ -223,8 +228,10 @@ class PostControllerTest {
     void deletePostFailDifferentWriter() throws Exception {
         //given
         Long postId = 1L;
+        String email = "emai@naver.com";
+
         doThrow(UnauthorizedException.class)
-            .when(postService).deletePost(postId, memberId);
+            .when(postService).deletePost(postId, email);
 
         //when then
         mockMvc.perform(delete("/api/posts/" + postId).with(csrf()))

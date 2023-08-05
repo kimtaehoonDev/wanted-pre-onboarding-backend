@@ -13,6 +13,9 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
@@ -30,7 +33,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
 public class PostController {
-    public static final Long memberId = 123L; // TODO 로그인 구현 후 변경
 
     private final PostService postService;
     private final PageRequestFactory pageRequestFactory;
@@ -38,6 +40,8 @@ public class PostController {
     @PostMapping
     public ResponseEntity<?> writePost(@RequestBody @Validated PostWriteRequestDto dto,
                                        BindingResult bindingResult) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
             for (FieldError error : bindingResult.getFieldErrors()) {
@@ -46,8 +50,9 @@ public class PostController {
             return ResponseEntity.badRequest().body(errors);
         }
 
+        String email = ((UserDetails) authentication.getPrincipal()).getUsername();
         PostWriteServiceRequestDto serviceDto =
-            new PostWriteServiceRequestDto(dto.getTitle(), dto.getContents(), memberId);
+            new PostWriteServiceRequestDto(dto.getTitle(), dto.getContents(), email);
         Long savedId = postService.writePost(serviceDto);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
@@ -72,7 +77,10 @@ public class PostController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePost(@PathVariable("id") Long postId) {
-        postService.deletePost(postId, memberId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = ((UserDetails) authentication.getPrincipal()).getUsername();
+
+        postService.deletePost(postId, email);
         return ResponseEntity.noContent().build();
 
     }

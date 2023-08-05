@@ -38,13 +38,13 @@ class PostServiceImplTest {
         //given
         String title = "제목";
         String contents = "내용입니다";
-        Long writerId = 1L;
         Long postId = 12L;
+        Long writerId = 1L;
         Member writer = makeMember(writerId, "k@naver.com", "123456789");
         Post post = makePost(postId, title, contents, writer);
         PostWriteServiceRequestDto dto = new PostWriteServiceRequestDto(title, contents, writer.getEmail());
 
-        when(memberRepository.findById(writerId))
+        when(memberRepository.findByEmail(writer.getEmail()))
             .thenReturn(Optional.of(writer));
         when(postRepository.save(any(Post.class)))
             .thenReturn(post);
@@ -54,7 +54,7 @@ class PostServiceImplTest {
 
         //then
         Assertions.assertThat(savedPostId).isEqualTo(post.getId());
-        verify(memberRepository, times(1)).findById(writerId);
+        verify(memberRepository, times(1)).findByEmail(writer.getEmail());
         verify(postRepository, times(1)).save(any(Post.class));
     }
 
