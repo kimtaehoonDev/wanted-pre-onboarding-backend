@@ -2,6 +2,7 @@ package com.kimtaehoondev.board.post.application;
 
 import com.kimtaehoondev.board.exception.MemberNotFoundException;
 import com.kimtaehoondev.board.exception.PostNotFoundException;
+import com.kimtaehoondev.board.exception.UnauthorizedException;
 import com.kimtaehoondev.board.member.domain.Member;
 import com.kimtaehoondev.board.member.domain.repository.MemberRepository;
 import com.kimtaehoondev.board.post.application.dto.request.PostModifyServiceRequestDto;
@@ -46,11 +47,19 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public Long deletePost(Long postId, String email) {
-        return null;
+        Post post = postRepository.findById(postId)
+            .orElseThrow(PostNotFoundException::new);
+        if (!post.writtenBy(email)) {
+            throw new UnauthorizedException();
+        }
+        postRepository.delete(post);
+        return post.getId();
     }
 
     @Override
+    @Transactional
     public Long modifyPost(PostModifyServiceRequestDto serviceDto) {
         return null;
     }
