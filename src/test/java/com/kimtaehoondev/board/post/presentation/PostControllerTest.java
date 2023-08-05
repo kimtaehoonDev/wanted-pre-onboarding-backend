@@ -2,6 +2,8 @@ package com.kimtaehoondev.board.post.presentation;
 
 import static org.hamcrest.Matchers.endsWith;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -199,10 +201,9 @@ class PostControllerTest {
     void deletePostFailNoPost() throws Exception {
         //given
         Long postId = 1L;
-        String email = "emai@naver.com";
 
         doThrow(PostNotFoundException.class)
-            .when(postService).deletePost(postId, email);
+            .when(postService).deletePost(anyLong(), anyString());
 
         //when then
         mockMvc.perform(delete("/api/posts/" + postId).with(csrf()))
@@ -215,10 +216,9 @@ class PostControllerTest {
     void deletePostFailNoWriter() throws Exception {
         //given
         Long postId = 1L;
-        String email = "emai@naver.com";
 
         doThrow(MemberNotFoundException.class)
-            .when(postService).deletePost(postId, email);
+            .when(postService).deletePost(anyLong(), anyString());
 
         //when then
         mockMvc.perform(delete("/api/posts/" + postId).with(csrf()))
@@ -231,16 +231,15 @@ class PostControllerTest {
     void deletePostFailDifferentWriter() throws Exception {
         //given
         Long postId = 1L;
-        String email = "emai@naver.com";
 
         doThrow(UnauthorizedException.class)
-            .when(postService).deletePost(postId, email);
+            .when(postService).deletePost(anyLong(), anyString());
 
         //when then
         mockMvc.perform(delete("/api/posts/" + postId).with(csrf()))
             .andExpect(status().isForbidden());
     }
-    // 게시물 수정
+
     @Test
     @WithMockUser
     @DisplayName("게시물을 수정한다")
@@ -258,6 +257,39 @@ class PostControllerTest {
             .andExpect(status().isOk());
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {" ", "", "   "})
+    @WithMockUser
+    @DisplayName("게시물을 수정할 때, 제목이 없으면 400 에러를 반환한다")
+    void modifyPostFailNoTitle(String title) throws Exception {
+        //given
+        Long postId = 1L;
+        PostModifyRequestDto dto =
+            new PostModifyRequestDto(title, "내용");
+
+        //when then
+        mockMvc.perform(put("/api/posts/" + postId).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().isBadRequest());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {" ", "", "   "})
+    @WithMockUser
+    @DisplayName("게시물을 수정할 때, 내용 없으면 400 에러를 반환한다")
+    void modifyPostFailNoContents(String contents) throws Exception {
+        //given
+        Long postId = 1L;
+        PostModifyRequestDto dto =
+            new PostModifyRequestDto("제목", contents);
+
+        //when then
+        mockMvc.perform(put("/api/posts/" + postId).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().isBadRequest());
+    }
 
     private PostDetailDto makePostDetailDto() {
         return new PostDetailDto() {
