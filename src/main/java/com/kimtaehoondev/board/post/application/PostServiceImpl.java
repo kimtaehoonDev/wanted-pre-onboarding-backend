@@ -41,4 +41,9 @@ public class PostServiceImpl implements PostService {
     public PostDetailDto getPost(Long postId) {
         return null;
     }
+
+    @Override
+    public Long deletePost(Long postId) {
+        return null;
+    }
 }

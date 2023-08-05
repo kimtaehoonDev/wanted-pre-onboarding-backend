@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -14,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kimtaehoondev.board.exception.MemberNotFoundException;
 import com.kimtaehoondev.board.exception.PostNotFoundException;
+import com.kimtaehoondev.board.exception.UnauthorizedException;
 import com.kimtaehoondev.board.post.application.PostService;
 import com.kimtaehoondev.board.post.application.dto.PostWriteServiceRequestDto;
 import com.kimtaehoondev.board.post.application.dto.response.PostDetailDto;
@@ -171,10 +173,63 @@ class PostControllerTest {
             .andExpect(status().isNotFound());
     }
 
-    // 게시물 수정
 
     // 게시물 삭제
+    @Test
+    @WithMockUser
+    @DisplayName("게시물을 삭제한다")
+    void deletePost() throws Exception {
+        //given
+        Long postId = 1L;
+        when(postService.deletePost(1L)).thenReturn(postId);
 
+        //when then
+        mockMvc.perform(delete("/api/posts/" + postId).with(csrf()))
+            .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("게시물이 없으면 게시물 삭제에 실패한다")
+    void deletePostFailNoPost() throws Exception {
+        //given
+        Long postId = 1L;
+        doThrow(PostNotFoundException.class)
+            .when(postService).deletePost(1L);
+
+        //when then
+        mockMvc.perform(delete("/api/posts/" + postId).with(csrf()))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("작성자가 없으면 게시물 삭제에 실패한다")
+    void deletePostFailNoWriter() throws Exception {
+        //given
+        Long postId = 1L;
+        doThrow(MemberNotFoundException.class)
+            .when(postService).deletePost(1L);
+
+        //when then
+        mockMvc.perform(delete("/api/posts/" + postId).with(csrf()))
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("작성자가 아니면 게시물 삭제에 실패한다")
+    void deletePostFailDifferentWriter() throws Exception {
+        //given
+        Long postId = 1L;
+        doThrow(UnauthorizedException.class)
+            .when(postService).deletePost(1L);
+
+        //when then
+        mockMvc.perform(delete("/api/posts/" + postId).with(csrf()))
+            .andExpect(status().isForbidden());
+    }
+    // 게시물 수정
 
     private PostDetailDto makePostDetailDto() {
         return new PostDetailDto() {

@@ -12,4 +12,6 @@ public interface PostService {
     List<PostSummaryDto> getPostsByPage(Pageable pageable);
 
     PostDetailDto getPost(Long postId);
+
+    Long deletePost(Long postId);
 }
