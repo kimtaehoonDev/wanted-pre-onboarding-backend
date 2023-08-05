@@ -42,7 +42,7 @@ class PostServiceImplTest {
         Long postId = 12L;
         Member writer = makeMember(writerId, "k@naver.com", "123456789");
         Post post = makePost(postId, title, contents, writer);
-        PostWriteServiceRequestDto dto = new PostWriteServiceRequestDto(title, contents, writerId);
+        PostWriteServiceRequestDto dto = new PostWriteServiceRequestDto(title, contents, writer.getEmail());
 
         when(memberRepository.findById(writerId))
             .thenReturn(Optional.of(writer));
@@ -64,16 +64,16 @@ class PostServiceImplTest {
         //given
         String title = "제목";
         String contents = "내용입니다";
-        Long writerId = 1L;
-        PostWriteServiceRequestDto dto = new PostWriteServiceRequestDto(title, contents, writerId);
+        String email = "k@naver.com";
+        PostWriteServiceRequestDto dto = new PostWriteServiceRequestDto(title, contents, email);
 
-        when(memberRepository.findById(dto.getMemberId()))
+        when(memberRepository.findByEmail(dto.getEmail()))
             .thenReturn(Optional.empty());
 
         //when, then
         Assertions.assertThatThrownBy(() -> postService.writePost(dto))
             .isInstanceOf(MemberNotFoundException.class);
-        verify(memberRepository, times(1)).findById(writerId);
+        verify(memberRepository, times(1)).findByEmail(email);
         verify(postRepository, never()).save(any(Post.class));
     }
 

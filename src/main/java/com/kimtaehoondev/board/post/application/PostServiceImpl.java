@@ -24,7 +24,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public Long writePost(PostWriteServiceRequestDto dto) {
-        Member writer = memberRepository.findById(dto.getMemberId())
+        Member writer = memberRepository.findByEmail(dto.getEmail())
             .orElseThrow(MemberNotFoundException::new);
 
         Post post = Post.create(dto.getTitle(), dto.getContents(), writer);
@@ -43,7 +43,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Long deletePost(Long postId, Long memberId) {
+    public Long deletePost(Long postId, String email) {
         return null;
     }
 }
