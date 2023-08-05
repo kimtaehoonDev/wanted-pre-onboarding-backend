@@ -1,9 +1,11 @@
 package com.kimtaehoondev.board.post.presentation;
 
 import com.kimtaehoondev.board.post.application.PostService;
-import com.kimtaehoondev.board.post.application.dto.PostWriteServiceRequestDto;
+import com.kimtaehoondev.board.post.application.dto.request.PostModifyServiceRequestDto;
+import com.kimtaehoondev.board.post.application.dto.request.PostWriteServiceRequestDto;
 import com.kimtaehoondev.board.post.application.dto.response.PostDetailDto;
 import com.kimtaehoondev.board.post.application.dto.response.PostSummaryDto;
+import com.kimtaehoondev.board.post.presentation.dto.PostModifyRequestDto;
 import com.kimtaehoondev.board.post.presentation.dto.PostWriteRequestDto;
 import com.kimtaehoondev.board.post.presentation.pageable.PageRequestFactory;
 import java.net.URI;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,8 +43,6 @@ public class PostController {
     @PostMapping
     public ResponseEntity<?> writePost(@RequestBody @Validated PostWriteRequestDto dto,
                                        BindingResult bindingResult) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
             for (FieldError error : bindingResult.getFieldErrors()) {
@@ -50,7 +51,7 @@ public class PostController {
             return ResponseEntity.badRequest().body(errors);
         }
 
-        String email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        String email = getEmail();
         PostWriteServiceRequestDto serviceDto =
             new PostWriteServiceRequestDto(dto.getTitle(), dto.getContents(), email);
         Long savedId = postService.writePost(serviceDto);
@@ -77,12 +78,24 @@ public class PostController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePost(@PathVariable("id") Long postId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = ((UserDetails) authentication.getPrincipal()).getUsername();
-
+        String email = getEmail();
         postService.deletePost(postId, email);
         return ResponseEntity.noContent().build();
+    }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> modifyPost(@PathVariable("id") Long postId,
+                                        @RequestBody @Validated PostModifyRequestDto dto) {
+        String email = getEmail();
+        PostModifyServiceRequestDto serviceDto =
+            new PostModifyServiceRequestDto(postId, dto.getTitle(), dto.getContents(), email);
+
+        postService.modifyPost(serviceDto);
+        return ResponseEntity.ok().body(postId);
+    }
+    private String getEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ((UserDetails) authentication.getPrincipal()).getUsername();
     }
 
 }

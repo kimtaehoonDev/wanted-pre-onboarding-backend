@@ -1,6 +1,7 @@
 package com.kimtaehoondev.board.post.application;
 
-import com.kimtaehoondev.board.post.application.dto.PostWriteServiceRequestDto;
+import com.kimtaehoondev.board.post.application.dto.request.PostModifyServiceRequestDto;
+import com.kimtaehoondev.board.post.application.dto.request.PostWriteServiceRequestDto;
 import com.kimtaehoondev.board.post.application.dto.response.PostDetailDto;
 import com.kimtaehoondev.board.post.application.dto.response.PostSummaryDto;
 import java.util.List;
@@ -14,4 +15,6 @@ public interface PostService {
     PostDetailDto getPost(Long postId);
 
     Long deletePost(Long postId, String email);
+
+    Long modifyPost(PostModifyServiceRequestDto serviceDto);
 }

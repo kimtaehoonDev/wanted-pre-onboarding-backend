@@ -11,7 +11,7 @@ import com.kimtaehoondev.board.member.domain.Member;
 import com.kimtaehoondev.board.member.domain.repository.MemberRepository;
 import com.kimtaehoondev.board.post.domain.Post;
 import com.kimtaehoondev.board.post.domain.PostRepository;
-import com.kimtaehoondev.board.post.application.dto.PostWriteServiceRequestDto;
+import com.kimtaehoondev.board.post.application.dto.request.PostWriteServiceRequestDto;
 import java.lang.reflect.Field;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;

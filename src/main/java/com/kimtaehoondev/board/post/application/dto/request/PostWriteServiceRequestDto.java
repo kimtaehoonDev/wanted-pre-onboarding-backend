@@ -1,4 +1,4 @@
-package com.kimtaehoondev.board.post.application.dto;
+package com.kimtaehoondev.board.post.application.dto.request;
 
 import lombok.Getter;
 
