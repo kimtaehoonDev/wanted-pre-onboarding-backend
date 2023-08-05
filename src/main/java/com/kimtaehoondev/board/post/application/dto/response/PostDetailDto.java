@@ -7,5 +7,5 @@ public interface PostDetailDto {
 
     String getContents();
 
-    String getMemberEmail();
+    String getWriterEmail();
 }

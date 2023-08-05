@@ -1,6 +1,7 @@
 package com.kimtaehoondev.board.post.application;
 
 import com.kimtaehoondev.board.exception.MemberNotFoundException;
+import com.kimtaehoondev.board.exception.PostNotFoundException;
 import com.kimtaehoondev.board.member.domain.Member;
 import com.kimtaehoondev.board.member.domain.repository.MemberRepository;
 import com.kimtaehoondev.board.post.application.dto.request.PostModifyServiceRequestDto;
@@ -40,7 +41,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDetailDto getPost(Long postId) {
-        return null;
+        return postRepository.findPostById(postId)
+            .orElseThrow(PostNotFoundException::new);
     }
 
     @Override

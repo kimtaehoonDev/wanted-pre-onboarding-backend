@@ -309,7 +309,7 @@ class PostControllerTest {
             }
 
             @Override
-            public String getMemberEmail() {
+            public String getWriterEmail() {
                 return "k@naver.com";
             }
         };
