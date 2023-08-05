@@ -11,17 +11,17 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(PostNotFoundException.class)
-    public ResponseEntity<?> postNotFound() {
+    public ResponseEntity<Void> postNotFound() {
         return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler(MemberNotFoundException.class)
-    public ResponseEntity<?> memberNotFound() {
+    public ResponseEntity<Void> memberNotFound() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<?> unauthorized() {
+    public ResponseEntity<Void> unauthorized() {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 

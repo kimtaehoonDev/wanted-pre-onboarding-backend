@@ -4,12 +4,14 @@ import com.kimtaehoondev.board.auth.jwt.JwtTokenProvider;
 import com.kimtaehoondev.board.auth.domain.TokenInfo;
 import com.kimtaehoondev.board.auth.presentation.dto.SignUpRequestDto;
 import com.kimtaehoondev.board.exception.EmailDuplicatedException;
+import com.kimtaehoondev.board.exception.LoginInfoIncorrectException;
 import com.kimtaehoondev.board.member.domain.Member;
 import com.kimtaehoondev.board.member.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,11 +43,15 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     @Override
     public TokenInfo login(String email, String password) {
-        UsernamePasswordAuthenticationToken authenticationToken =
-            new UsernamePasswordAuthenticationToken(email, password);
-        Authentication authentication =
-            authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        try {
+            UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(email, password);
+            Authentication authentication =
+                authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
-        return jwtTokenProvider.generateToken(authentication);
+            return jwtTokenProvider.generateToken(authentication);
+        } catch (AuthenticationException e) {
+            throw new LoginInfoIncorrectException();
+        }
     }
 }
