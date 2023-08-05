@@ -37,7 +37,7 @@ public class Post {
     @JoinColumn(name = "WRITER_ID")
     private Member writer;
 
-    //역정규화가 일어남 writer 객체의 email
+    //역정규화 컬럼
     private String writerEmail;
 
     private boolean deleted;
@@ -48,5 +48,10 @@ public class Post {
 
     public boolean writtenBy(String email) {
         return Objects.equals(writerEmail, email);
+    }
+
+    public void changeTitleAndContents(String title, String contents) {
+        this.title = title;
+        this.contents = contents;
     }
 }

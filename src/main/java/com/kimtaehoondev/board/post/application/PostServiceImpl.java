@@ -49,11 +49,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public Long deletePost(Long postId, String email) {
-        Post post = postRepository.findById(postId)
-            .orElseThrow(PostNotFoundException::new);
-        if (!post.writtenBy(email)) {
-            throw new UnauthorizedException();
-        }
+        Post post = findAuthorizedMembersPost(postId, email);
         postRepository.delete(post);
         return post.getId();
     }
@@ -61,6 +57,17 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public Long modifyPost(PostModifyServiceRequestDto serviceDto) {
-        return null;
+        Post post = findAuthorizedMembersPost(serviceDto.getPostId(), serviceDto.getEmail());
+        post.changeTitleAndContents(serviceDto.getTitle(), serviceDto.getContents());
+        return post.getId();
+    }
+
+    private Post findAuthorizedMembersPost(Long postId, String email) {
+        Post post = postRepository.findById(postId)
+            .orElseThrow(PostNotFoundException::new);
+        if (!post.writtenBy(email)) {
+            throw new UnauthorizedException();
+        }
+        return post;
     }
 }
