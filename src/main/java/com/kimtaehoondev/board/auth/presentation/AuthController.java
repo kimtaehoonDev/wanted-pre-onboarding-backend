@@ -24,6 +24,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
+    /**
+     * 이메일에는 최소 한개의 @가 들어가야 합니다.
+      */
+    public static final String EMAIL_CONDITION_REGEX = "^.*@.*$";
+
     private final AuthService authService;
 
     @PostMapping("/signup")
