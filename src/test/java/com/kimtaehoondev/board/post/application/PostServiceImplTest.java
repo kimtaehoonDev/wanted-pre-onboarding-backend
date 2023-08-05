@@ -6,7 +6,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.kimtaehoondev.board.exception.MemberNotFoundException;
+import com.kimtaehoondev.board.exception.impl.MemberNotFoundException;
 import com.kimtaehoondev.board.member.domain.Member;
 import com.kimtaehoondev.board.member.domain.repository.MemberRepository;
 import com.kimtaehoondev.board.post.domain.Post;

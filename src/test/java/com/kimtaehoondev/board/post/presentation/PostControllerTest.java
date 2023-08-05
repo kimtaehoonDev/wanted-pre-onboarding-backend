@@ -16,9 +16,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kimtaehoondev.board.exception.MemberNotFoundException;
-import com.kimtaehoondev.board.exception.PostNotFoundException;
-import com.kimtaehoondev.board.exception.UnauthorizedException;
+import com.kimtaehoondev.board.exception.impl.MemberNotFoundException;
+import com.kimtaehoondev.board.exception.impl.PostNotFoundException;
+import com.kimtaehoondev.board.exception.impl.UnauthorizedException;
 import com.kimtaehoondev.board.post.application.PostService;
 import com.kimtaehoondev.board.post.application.dto.request.PostModifyServiceRequestDto;
 import com.kimtaehoondev.board.post.application.dto.request.PostWriteServiceRequestDto;

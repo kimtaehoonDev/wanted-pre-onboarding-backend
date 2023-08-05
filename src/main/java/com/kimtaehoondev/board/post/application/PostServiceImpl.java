@@ -1,8 +1,8 @@
 package com.kimtaehoondev.board.post.application;
 
-import com.kimtaehoondev.board.exception.MemberNotFoundException;
-import com.kimtaehoondev.board.exception.PostNotFoundException;
-import com.kimtaehoondev.board.exception.UnauthorizedException;
+import com.kimtaehoondev.board.exception.impl.MemberNotFoundException;
+import com.kimtaehoondev.board.exception.impl.PostNotFoundException;
+import com.kimtaehoondev.board.exception.impl.UnauthorizedException;
 import com.kimtaehoondev.board.member.domain.Member;
 import com.kimtaehoondev.board.member.domain.repository.MemberRepository;
 import com.kimtaehoondev.board.post.application.dto.request.PostModifyServiceRequestDto;

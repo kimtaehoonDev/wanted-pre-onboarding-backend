@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kimtaehoondev.board.auth.application.AuthService;
 import com.kimtaehoondev.board.auth.presentation.dto.SignUpRequestDto;
-import com.kimtaehoondev.board.exception.EmailDuplicatedException;
+import com.kimtaehoondev.board.exception.impl.EmailDuplicatedException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

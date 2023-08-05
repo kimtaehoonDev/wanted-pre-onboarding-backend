@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 
 import com.kimtaehoondev.board.auth.jwt.JwtTokenProvider;
 import com.kimtaehoondev.board.auth.presentation.dto.SignUpRequestDto;
-import com.kimtaehoondev.board.exception.EmailDuplicatedException;
+import com.kimtaehoondev.board.exception.impl.EmailDuplicatedException;
 import com.kimtaehoondev.board.member.domain.Member;
 import com.kimtaehoondev.board.member.domain.repository.MemberRepository;
 import java.lang.reflect.Field;

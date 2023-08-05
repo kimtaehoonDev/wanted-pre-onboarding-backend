@@ -1,8 +1,10 @@
 package com.kimtaehoondev.board;
 
-import com.kimtaehoondev.board.exception.MemberNotFoundException;
-import com.kimtaehoondev.board.exception.PostNotFoundException;
-import com.kimtaehoondev.board.exception.UnauthorizedException;
+import com.kimtaehoondev.board.exception.impl.MemberNotFoundException;
+import com.kimtaehoondev.board.exception.impl.PostNotFoundException;
+import com.kimtaehoondev.board.exception.impl.UnauthorizedException;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,13 +18,17 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MemberNotFoundException.class)
-    public ResponseEntity<Void> memberNotFound() {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    public ResponseEntity<Map<String, String>> memberNotFound(Exception e) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("common", e.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errors);
     }
 
     @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<Void> unauthorized() {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    public ResponseEntity<Map<String, String>> unauthorized(Exception e) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("common", e.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errors);
     }
 
 }
