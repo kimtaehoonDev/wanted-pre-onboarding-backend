@@ -27,13 +27,14 @@ public class WebSecurityConfig {
             .httpBasic(AbstractHttpConfigurer::disable)
             .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
             .sessionManagement(x -> x.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeRequests()
-            .antMatchers(HttpMethod.POST, "/api/posts").hasAuthority("ROLE_USER")
-            .antMatchers(HttpMethod.PUT, "/api/posts/**").hasAuthority("ROLE_USER")
-            .antMatchers(HttpMethod.DELETE, "/api/posts/**").hasAuthority("ROLE_USER")
-            .anyRequest().permitAll()
-            .and()
-            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+            .authorizeRequests(x -> {
+                x.antMatchers(HttpMethod.POST, "/api/posts").hasAuthority("ROLE_USER")
+                    .antMatchers(HttpMethod.PUT, "/api/posts/**").hasAuthority("ROLE_USER")
+                    .antMatchers(HttpMethod.DELETE, "/api/posts/**").hasAuthority("ROLE_USER")
+                    .anyRequest().permitAll();
+            })
+            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                UsernamePasswordAuthenticationFilter.class)
             .build();
     }
 
