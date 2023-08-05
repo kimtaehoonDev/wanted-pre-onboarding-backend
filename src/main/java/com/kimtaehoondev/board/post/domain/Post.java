@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -24,12 +25,17 @@ public class Post {
 
     private String contents;
 
-    // TODO 매핑
+
     @ManyToOne
-    private Member member;
+    @JoinColumn(name = "WRITER_ID")
+    private Member writer;
+
+    //역정규화가 일어남 writer 객체의 email
+    private String writerEmail;
+
 
     public static Post create(String title, String contents, Member writer) {
-        return new Post(null, title, contents, writer);
+        return new Post(null, title, contents, writer, writer.getEmail());
     }
 
 }

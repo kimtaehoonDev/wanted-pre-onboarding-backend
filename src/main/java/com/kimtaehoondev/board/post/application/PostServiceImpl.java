@@ -35,7 +35,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostSummaryDto> getPostsByPage(Pageable pageable) {
-        return null;
+        return postRepository.findAllPostBy(pageable);
     }
 
     @Override
