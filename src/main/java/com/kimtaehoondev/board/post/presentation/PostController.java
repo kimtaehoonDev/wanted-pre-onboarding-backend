@@ -1,8 +1,5 @@
 package com.kimtaehoondev.board.post.presentation;
 
-import com.kimtaehoondev.board.exception.MemberNotFoundException;
-import com.kimtaehoondev.board.exception.PostNotFoundException;
-import com.kimtaehoondev.board.exception.UnauthorizedException;
 import com.kimtaehoondev.board.post.application.PostService;
 import com.kimtaehoondev.board.post.application.dto.PostWriteServiceRequestDto;
 import com.kimtaehoondev.board.post.application.dto.response.PostDetailDto;
@@ -15,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -49,19 +45,16 @@ public class PostController {
             }
             return ResponseEntity.badRequest().body(errors);
         }
-        try {
-            PostWriteServiceRequestDto serviceDto =
-                new PostWriteServiceRequestDto(dto.getTitle(), dto.getContents(), memberId);
-            Long savedId = postService.writePost(serviceDto);
 
-            URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
-                .replacePath("/api/posts/" + savedId)
-                .build()
-                .toUri();
-            return ResponseEntity.created(location).build();
-        } catch (MemberNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        PostWriteServiceRequestDto serviceDto =
+            new PostWriteServiceRequestDto(dto.getTitle(), dto.getContents(), memberId);
+        Long savedId = postService.writePost(serviceDto);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
+            .replacePath("/api/posts/" + savedId)
+            .build()
+            .toUri();
+        return ResponseEntity.created(location).build();
     }
 
     @GetMapping
@@ -73,26 +66,15 @@ public class PostController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getPost(@PathVariable(name = "id") Long postId) {
-        try {
-            PostDetailDto post = postService.getPost(postId);
-            return ResponseEntity.ok(post);
-        } catch (PostNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        PostDetailDto post = postService.getPost(postId);
+        return ResponseEntity.ok(post);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePost(@PathVariable("id") Long postId) {
-        try {
-            postService.deletePost(postId);
-            return ResponseEntity.noContent().build();
-        } catch (PostNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (MemberNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } catch (UnauthorizedException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        postService.deletePost(postId);
+        return ResponseEntity.noContent().build();
+
     }
 
 }

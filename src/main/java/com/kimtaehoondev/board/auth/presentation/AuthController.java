@@ -45,7 +45,5 @@ public class AuthController {
         } catch (EmailDuplicatedException e) {
             return ResponseEntity.badRequest().build();
         }
-
-
     }
 }
