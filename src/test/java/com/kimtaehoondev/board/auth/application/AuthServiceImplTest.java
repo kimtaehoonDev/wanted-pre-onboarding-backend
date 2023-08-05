@@ -59,7 +59,7 @@ class AuthServiceImplTest {
         String email = "k@naver.com";
         SignUpRequestDto dto = new SignUpRequestDto(email, "12345678");
         when(memberRepository.findByEmail(email))
-            .thenReturn(Optional.of(Member.create(null, null)));
+            .thenReturn(Optional.of(Member.createNormalMember(null, null)));
 
         // then
         Assertions.assertThatThrownBy(() -> authService.signUp(dto))
@@ -71,7 +71,7 @@ class AuthServiceImplTest {
 
     private static Member makeMember(long savedId, String email, String pwd)
         throws NoSuchFieldException, IllegalAccessException {
-        Member member = Member.create(email, pwd);
+        Member member = Member.createNormalMember(email, pwd);
 
         Field idField = Member.class.getDeclaredField("id");
         idField.setAccessible(true);

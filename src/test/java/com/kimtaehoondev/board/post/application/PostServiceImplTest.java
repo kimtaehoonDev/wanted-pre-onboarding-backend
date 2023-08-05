@@ -89,7 +89,7 @@ class PostServiceImplTest {
     }
     private static Member makeMember(long savedId, String email, String pwd)
         throws NoSuchFieldException, IllegalAccessException {
-        Member member = Member.create(email, pwd);
+        Member member = Member.createNormalMember(email, pwd);
 
         Field idField = Member.class.getDeclaredField("id");
         idField.setAccessible(true);
