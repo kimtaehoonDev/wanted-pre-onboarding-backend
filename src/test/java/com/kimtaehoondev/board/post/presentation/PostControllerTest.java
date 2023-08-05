@@ -37,6 +37,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(PostController.class)
 class PostControllerTest {
     public static final int DEFAULT_SIZE = 5;
+    public static final Long memberId = PostController.memberId;
 
     @MockBean
     PostService postService;
@@ -181,7 +182,7 @@ class PostControllerTest {
     void deletePost() throws Exception {
         //given
         Long postId = 1L;
-        when(postService.deletePost(1L)).thenReturn(postId);
+        when(postService.deletePost(1L, memberId)).thenReturn(postId);
 
         //when then
         mockMvc.perform(delete("/api/posts/" + postId).with(csrf()))
@@ -195,7 +196,7 @@ class PostControllerTest {
         //given
         Long postId = 1L;
         doThrow(PostNotFoundException.class)
-            .when(postService).deletePost(1L);
+            .when(postService).deletePost(postId, memberId);
 
         //when then
         mockMvc.perform(delete("/api/posts/" + postId).with(csrf()))
@@ -209,7 +210,7 @@ class PostControllerTest {
         //given
         Long postId = 1L;
         doThrow(MemberNotFoundException.class)
-            .when(postService).deletePost(1L);
+            .when(postService).deletePost(postId, memberId);
 
         //when then
         mockMvc.perform(delete("/api/posts/" + postId).with(csrf()))
@@ -223,7 +224,7 @@ class PostControllerTest {
         //given
         Long postId = 1L;
         doThrow(UnauthorizedException.class)
-            .when(postService).deletePost(1L);
+            .when(postService).deletePost(postId, memberId);
 
         //when then
         mockMvc.perform(delete("/api/posts/" + postId).with(csrf()))

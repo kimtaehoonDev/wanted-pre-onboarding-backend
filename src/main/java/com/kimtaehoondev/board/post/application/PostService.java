@@ -13,5 +13,5 @@ public interface PostService {
 
     PostDetailDto getPost(Long postId);
 
-    Long deletePost(Long postId);
+    Long deletePost(Long postId, Long memberId);
 }

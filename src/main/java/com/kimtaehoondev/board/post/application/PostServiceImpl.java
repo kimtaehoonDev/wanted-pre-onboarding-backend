@@ -43,7 +43,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Long deletePost(Long postId) {
+    public Long deletePost(Long postId, Long memberId) {
         return null;
     }
 }
