@@ -29,6 +29,8 @@ public class WebSecurityConfig {
             .sessionManagement(x -> x.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeRequests()
             .antMatchers(HttpMethod.POST, "/api/posts").hasAuthority("ROLE_USER")
+            .antMatchers(HttpMethod.PUT, "/api/posts/**").hasAuthority("ROLE_USER")
+            .antMatchers(HttpMethod.DELETE, "/api/posts/**").hasAuthority("ROLE_USER")
             .anyRequest().permitAll()
             .and()
             .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
