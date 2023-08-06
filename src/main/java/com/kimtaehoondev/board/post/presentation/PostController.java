@@ -4,14 +4,15 @@ import com.kimtaehoondev.board.post.application.PostService;
 import com.kimtaehoondev.board.post.application.dto.request.PostModifyServiceRequestDto;
 import com.kimtaehoondev.board.post.application.dto.request.PostWriteServiceRequestDto;
 import com.kimtaehoondev.board.post.application.dto.response.PostDetailDto;
-import com.kimtaehoondev.board.post.application.dto.response.PostSummaryDto;
 import com.kimtaehoondev.board.post.presentation.dto.PostModifyRequestDto;
 import com.kimtaehoondev.board.post.presentation.dto.PostWriteRequestDto;
+import com.kimtaehoondev.board.post.presentation.dto.response.PostResponseDto;
 import com.kimtaehoondev.board.post.presentation.pageable.PageRequestFactory;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -60,20 +61,24 @@ public class PostController {
             .replacePath("/api/posts/" + savedId)
             .build()
             .toUri();
-        return ResponseEntity.created(location).build();
+        PostResponseDto responseDto = new PostResponseDto();
+        responseDto.setId(savedId);
+        return ResponseEntity.created(location).body(responseDto);
     }
 
     @GetMapping
-    public ResponseEntity<List<PostSummaryDto>> getPostsByPage(@RequestParam(required = false) Integer page) {
+    public ResponseEntity<List<PostResponseDto>> getPostsByPage(@RequestParam(required = false) Integer page) {
         Pageable pageable = pageRequestFactory.make(page);
-        List<PostSummaryDto> posts = postService.getPostsByPage(pageable);
+        List<PostResponseDto> posts =  postService.getPostsByPage(pageable).stream()
+            .map(PostResponseDto::from)
+            .collect(Collectors.toList());
         return ResponseEntity.ok(posts);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostDetailDto> getPost(@PathVariable(name = "id") Long postId) {
+    public ResponseEntity<PostResponseDto> getPost(@PathVariable(name = "id") Long postId) {
         PostDetailDto post = postService.getPost(postId);
-        return ResponseEntity.ok(post);
+        return ResponseEntity.ok(PostResponseDto.from(post));
     }
 
     @DeleteMapping("/{id}")
@@ -84,14 +89,16 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Long> modifyPost(@PathVariable("id") Long postId,
+    public ResponseEntity<PostResponseDto> modifyPost(@PathVariable("id") Long postId,
                                         @RequestBody @Validated PostModifyRequestDto dto) {
         String email = getEmail();
         PostModifyServiceRequestDto serviceDto =
             new PostModifyServiceRequestDto(postId, dto.getTitle(), dto.getContents(), email);
 
         postService.modifyPost(serviceDto);
-        return ResponseEntity.ok().body(postId);
+        PostResponseDto postResponseDto = new PostResponseDto();
+        postResponseDto.setId(postId);
+        return ResponseEntity.ok().body(postResponseDto);
     }
 
     private String getEmail() {
