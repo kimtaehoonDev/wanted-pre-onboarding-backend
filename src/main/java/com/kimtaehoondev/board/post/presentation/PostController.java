@@ -1,5 +1,7 @@
 package com.kimtaehoondev.board.post.presentation;
 
+import com.kimtaehoondev.board.exception.impl.MemberNotFoundException;
+import com.kimtaehoondev.board.exception.impl.UnauthenticatedException;
 import com.kimtaehoondev.board.post.application.PostService;
 import com.kimtaehoondev.board.post.application.dto.request.PostModifyServiceRequestDto;
 import com.kimtaehoondev.board.post.application.dto.request.PostWriteServiceRequestDto;
@@ -52,18 +54,22 @@ public class PostController {
             return ResponseEntity.badRequest().body(errors);
         }
 
-        String email = getEmail();
-        PostWriteServiceRequestDto serviceDto =
-            new PostWriteServiceRequestDto(dto.getTitle(), dto.getContents(), email);
-        Long savedId = postService.writePost(serviceDto);
+        try {
+            String email = getEmail();
+            PostWriteServiceRequestDto serviceDto =
+                new PostWriteServiceRequestDto(dto.getTitle(), dto.getContents(), email);
+            Long savedId = postService.writePost(serviceDto);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
-            .replacePath("/api/posts/" + savedId)
-            .build()
-            .toUri();
-        PostResponseDto responseDto = new PostResponseDto();
-        responseDto.setId(savedId);
-        return ResponseEntity.created(location).body(responseDto);
+            URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
+                .replacePath("/api/posts/" + savedId)
+                .build()
+                .toUri();
+            PostResponseDto responseDto = new PostResponseDto();
+            responseDto.setId(savedId);
+            return ResponseEntity.created(location).body(responseDto);
+        } catch (MemberNotFoundException e) {
+            throw new UnauthenticatedException();
+        }
     }
 
     @GetMapping
@@ -83,9 +89,14 @@ public class PostController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable("id") Long postId) {
-        String email = getEmail();
-        postService.deletePost(postId, email);
-        return ResponseEntity.noContent().build();
+        try {
+            String email = getEmail();
+            postService.deletePost(postId, email);
+            return ResponseEntity.noContent().build();
+        } catch (MemberNotFoundException e) {
+            throw new UnauthenticatedException();
+        }
+
     }
 
     @PutMapping("/{id}")

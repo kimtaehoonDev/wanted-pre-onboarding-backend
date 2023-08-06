@@ -2,6 +2,7 @@ package com.kimtaehoondev.board;
 
 import com.kimtaehoondev.board.exception.impl.MemberNotFoundException;
 import com.kimtaehoondev.board.exception.impl.PostNotFoundException;
+import com.kimtaehoondev.board.exception.impl.UnauthenticatedException;
 import com.kimtaehoondev.board.exception.impl.UnauthorizedException;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +30,13 @@ public class GlobalExceptionHandler {
         Map<String, String> errors = new HashMap<>();
         errors.put("common", e.getMessage());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errors);
+    }
+
+    @ExceptionHandler(UnauthenticatedException.class)
+    public ResponseEntity<Map<String, String>> unauthenticated(Exception e) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("common", e.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errors);
     }
 
 }
