@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> memberNotFound(Exception e) {
         Map<String, String> errors = new HashMap<>();
         errors.put("common", e.getMessage());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errors);
+        return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler(UnauthorizedException.class)

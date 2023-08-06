@@ -46,7 +46,8 @@ public class Member implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream()
             .map(SimpleGrantedAuthority::new)
-            .collect(Collectors.toList());    }
+            .collect(Collectors.toList());
+    }
 
     @Override
     public String getPassword() {
