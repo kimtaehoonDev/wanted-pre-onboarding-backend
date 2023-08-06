@@ -53,19 +53,14 @@ class PostControllerIntegrationTest {
     static String otherEmail = "other@naver.com";
     static String otherPwd = "241512561244";
 
+    /**
+     * email과 otherEmail 두 계정에 대해 회원가입을 한다
+     */
     @BeforeEach
     @WithMockUser(username = "other@naver.com",  roles = "USER")
-    void registerMember() throws Exception {
-        SignUpRequestDto userDto = new SignUpRequestDto(email, pwd);
-        mockMvc.perform(post("/api/auth/signup").with(csrf())
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(userDto)));
-
-        SignUpRequestDto otherUserDto = new SignUpRequestDto(otherEmail, otherPwd);
-        mockMvc.perform(post("/api/auth/signup").with(csrf())
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(otherUserDto)));
-
+    void beforeEach() throws Exception {
+        registerMember(email, pwd);
+        registerMember(otherEmail, otherPwd);
     }
 
     // 게시물 생성
@@ -369,6 +364,36 @@ class PostControllerIntegrationTest {
                 return false;
             }
         };
+    }
+
+    private Long registerMember(String email, String  pwd) throws Exception {
+        SignUpRequestDto userDto = new SignUpRequestDto(email, pwd);
+
+        MvcResult mvcResult = mockMvc.perform(post("/api/auth/signup").with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(userDto)))
+            .andExpect(status().isCreated())
+            .andExpect(header().string("Location", containsString("/api/members/")))
+            .andReturn();
+        return getCreatedResourceId(mvcResult);
+    }
+
+    private Long registerPost(String title, String contents) throws Exception {
+        PostWriteRequestDto dto = new PostWriteRequestDto(title, contents);
+
+        MvcResult mvcResult = mockMvc.perform(post("/api/posts").with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().isCreated())
+            .andExpect(header().string("Location", containsString("/api/posts/")))
+            .andReturn();
+        return getCreatedResourceId(mvcResult);
+    }
+
+    private static long getCreatedResourceId(MvcResult mvcResult) {
+        String location = mvcResult.getResponse().getHeader("Location").substring(9);
+        String[] split = location.split("/");
+        return Long.parseLong(split[split.length - 1]);
     }
 
 }
