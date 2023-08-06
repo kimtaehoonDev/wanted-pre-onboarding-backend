@@ -1,5 +1,6 @@
 package com.kimtaehoondev.board.post.presentation;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.anonymous;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -14,15 +15,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kimtaehoondev.board.auth.presentation.dto.SignUpRequestDto;
-import com.kimtaehoondev.board.post.application.dto.request.PostWriteServiceRequestDto;
 import com.kimtaehoondev.board.post.presentation.dto.PostModifyRequestDto;
 import com.kimtaehoondev.board.post.presentation.dto.PostWriteRequestDto;
+import com.kimtaehoondev.board.post.presentation.dto.response.PostResponseDto;
 import java.util.Collection;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -47,64 +49,38 @@ class PostControllerIntegrationTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    static String email = "k@naver.com";
-    static String pwd = "12345678";
+    static String loginMemberEmail = "k@naver.com";
+    static String loginMemberPwd = "12345678";
 
     static String otherEmail = "other@naver.com";
     static String otherPwd = "241512561244";
+
 
     /**
      * email과 otherEmail 두 계정에 대해 회원가입을 한다
      */
     @BeforeEach
-    @WithMockUser(username = "other@naver.com",  roles = "USER")
+    @WithMockUser(username = "other@naver.com", roles = "USER")
     void beforeEach() throws Exception {
-        registerMember(email, pwd);
+        registerMember(loginMemberEmail, loginMemberPwd);
         registerMember(otherEmail, otherPwd);
     }
 
-    // 게시물 생성
     @ParameterizedTest
-    @ValueSource(strings = {"title", "@", " 1 ", "sakljfhajkshfajkfhjakhfjk"})
-    @DisplayName("게시물 생성 성공 - 제목이 있는 경우")
+    @CsvSource({"title, contents", "@, sakljfhajkshfajkfhjakhfjk", " 1, @",
+        "sakljfhajkshfajkfhjakhfjk, @"})
+    @DisplayName("게시물을 성공적으로 등록한다")
     @WithMockUser(username = "k@naver.com", roles = "USER")
-    void writePostHavingTitle(String title) throws Exception {
-        PostWriteRequestDto dto =
-            new PostWriteRequestDto(title, "contents");
-
-        mockMvc.perform(post("/api/posts").with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dto)))
-            .andExpect(status().isCreated())
-            .andExpect(header().string("Location", containsString("/api/posts/")));
-
+    void writePostHavingTitle(String title, String contents) throws Exception {
+        registerPost(title, contents);
     }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"contents", "@", " 1 ", "sakljfhajkshfajkfhjakhfjk"})
-    @DisplayName("게시물 생성 성공 - 내용이 있는 경우")
-    @WithMockUser(username = "k@naver.com", roles = "USER")
-    void writePostHavingContents(String contents) throws Exception {
-        PostWriteRequestDto dto =
-            new PostWriteRequestDto("title", contents);
-
-        mockMvc.perform(post("/api/posts").with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dto)))
-            .andExpect(status().isCreated())
-            .andExpect(header().string("Location", containsString("/api/posts/")));
-    }
-
 
     @Test
-    @DisplayName("로그인되지 않은 사용자가 게시물을 작성할 때 401 상태를 반환한다")
+    @DisplayName("로그인하지 않은 사용자가 게시물을 등록할 때, 401 상태를 반환한다")
     void cantWriteUnauthenticatedMember() throws Exception {
-        String email = "emai@naver.com";
-        PostWriteServiceRequestDto dto =
-            new PostWriteServiceRequestDto("title", "contents", email);
+        PostWriteRequestDto dto = new PostWriteRequestDto("title", "contents");
 
         mockMvc.perform(post("/api/posts").with(csrf())
-                .with(anonymous())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().isUnauthorized());
@@ -113,7 +89,7 @@ class PostControllerIntegrationTest {
     @ParameterizedTest
     @ValueSource(strings = {"", " ", "  "})
     @WithMockUser(username = "k@naver.com", roles = "USER")
-    @DisplayName("제목이 비어있으면, 게시물 등록에 실패한다")
+    @DisplayName("게시물을 등록할 때 제목이 비어있으면, 400 상태를 반환한다")
     void noTitle(String title) throws Exception {
         PostWriteRequestDto dto = new PostWriteRequestDto(title, "contents");
 
@@ -126,7 +102,7 @@ class PostControllerIntegrationTest {
     @ParameterizedTest
     @ValueSource(strings = {"", " ", "  "})
     @WithMockUser(username = "k@naver.com", roles = "USER")
-    @DisplayName("내용이 비어있으면, 게시물 등록에 실패한다")
+    @DisplayName("게시물을 등록할 때 내용이 비어있으면, 400 상태를 반환한다")
     void noContents(String contents) throws Exception {
         PostWriteRequestDto dto = new PostWriteRequestDto("title", contents);
 
@@ -136,35 +112,49 @@ class PostControllerIntegrationTest {
             .andExpect(status().isBadRequest());
     }
 
-    // 게시물 페이징
     @Test
-    @WithMockUser
-    @DisplayName("페이지 정보를 입력해 게시물들을 가져온다")
+    @DisplayName("게시물을 page 번호를 사용해 조회한다")
     void paging() throws Exception {
-        //given
-        // 페이지를 만드는 공장에서 무조건 pageable 인스턴스를 반환하게 한다
-        int page = 2;
+        UserDetails otherUser = makeUser(otherEmail, otherPwd);
 
-        mockMvc.perform(get("/api/posts?page=" + page).with(csrf()))
+        // 게시물을 12개 등록합니다
+        for (int i = 0; i < 12; i++) {
+            registerPost("title", "contents", otherUser);
+        }
+
+        //when & then
+        // 0페이지를 조회하면 10개의 게시물을 반환합니다(최대 10개)
+        int page = 0;
+        mockMvc.perform(get("/api/posts?page=" + page).with(csrf())
+                .with(anonymous()))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$").isArray()); // 최상단이 배열임을 확인한다
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$.length()").value(10));
+
+        // 1페이지를 조회하면 2개의 게시물을 반환합니다.
+        page = 1;
+        mockMvc.perform(get("/api/posts?page=" + page).with(csrf())
+                .with(anonymous()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$.length()").value(2));
+
+        // 2페이지를 조회하면 0개의 게시물을 반환합니다.
+        page = 2;
+        mockMvc.perform(get("/api/posts?page=" + page).with(csrf())
+                .with(anonymous()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$.length()").value(0));
     }
+
 
     // 게시물 단건 읽기
     @Test
     @WithMockUser(username = "k@naver.com", roles = "USER")
-    @DisplayName("단건 게시물 조회에 성공한다")
+    @DisplayName("게시물 단건을 조회한다")
     void searchAlone() throws Exception {
-        PostWriteRequestDto dto =
-            new PostWriteRequestDto("제목", "contents");
-
-        MvcResult mvcResult = mockMvc.perform(post("/api/posts").with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dto)))
-            .andReturn();
-
-
-        long postId = getCreatedResourceId(mvcResult);
+        Long postId = registerPost("title", "contents");
 
         mockMvc.perform(get("/api/posts/" + postId).with(csrf()))
             .andExpect(status().isOk());
@@ -173,7 +163,7 @@ class PostControllerIntegrationTest {
 
     @Test
     @WithMockUser
-    @DisplayName("게시물이 없으면 단건 게시물 조회에 실패한다")
+    @DisplayName("존재하지 않는 게시물을 조회하면, 404 상태를 반환한다")
     void searchAloneFail() throws Exception {
         long postId = 123L;
 
@@ -182,19 +172,12 @@ class PostControllerIntegrationTest {
     }
 
 
-    // 게시물 삭제
     @Test
     @WithMockUser(username = "k@naver.com", roles = "USER")
     @DisplayName("게시물을 삭제한다")
     void deletePost() throws Exception {
         //given
-        PostWriteRequestDto dto =
-            new PostWriteRequestDto("제목", "contents");
-        MvcResult mvcResult = mockMvc.perform(post("/api/posts").with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dto)))
-            .andReturn();
-        long postId = getCreatedResourceId(mvcResult);
+        Long postId = registerPost("title", "content");
 
         //when then
         mockMvc.perform(delete("/api/posts/" + postId).with(csrf()))
@@ -203,7 +186,7 @@ class PostControllerIntegrationTest {
 
     @Test
     @WithMockUser(username = "k@naver.com", roles = "USER")
-    @DisplayName("게시물이 없으면 게시물 삭제에 실패한다")
+    @DisplayName("존재하지 않는 게시물을 삭제하면, 404 상태를 반환한다")
     void deletePostFailNoPost() throws Exception {
         //given
         Long postId = 123L;
@@ -214,7 +197,7 @@ class PostControllerIntegrationTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 사용자는 게시물 삭제에 실패한다")
+    @DisplayName("로그인하지 않은 사용자가 게시물을 삭제할 때, 401 상태를 반환한다")
     void deletePostFailNoWriter() throws Exception {
         //given
         Long postId = 123L;
@@ -230,15 +213,7 @@ class PostControllerIntegrationTest {
     @DisplayName("작성자가 아니면 게시물 삭제에 실패한다")
     void deletePostFailDifferentWriter() throws Exception {
         UserDetails otherUser = makeUser(otherEmail, otherPwd);
-
-        // 다른 사용자 otherUser 객체가 글을 등록한다
-        PostWriteRequestDto postDto = new PostWriteRequestDto("title", "contents");
-        MvcResult mvcResult = mockMvc.perform(post("/api/posts").with(csrf())
-                .with(user(otherUser))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(postDto)))
-            .andReturn();
-        long postId = getCreatedResourceId(mvcResult);
+        Long postId = registerPost("title", "cont", otherUser);
 
         //when then
         mockMvc.perform(delete("/api/posts/" + postId).with(csrf()))
@@ -251,40 +226,33 @@ class PostControllerIntegrationTest {
     @DisplayName("게시물을 수정한다")
     void modifyPost() throws Exception {
         //given
-        PostWriteRequestDto dto =
-            new PostWriteRequestDto("제목", "내용");
-
-        //when then
-        MvcResult mvcResult = mockMvc.perform(post("/api/posts/").with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dto)))
-            .andReturn();
-        long postId = getCreatedResourceId(mvcResult);
+        Long postId = registerPost("ittle", "con");
 
         PostModifyRequestDto modifyDto =
             new PostModifyRequestDto("변경할거야", "이렇게");
 
+        // 수정이 성공하면 200번 상태를 반환합니다.
         mockMvc.perform(put("/api/posts/" + postId).with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(modifyDto)))
             .andExpect(status().isOk());
+
+        PostResponseDto response = findPostById(postId);
+
+        assertThat(response.getId()).isEqualTo(postId);
+        assertThat(response.getTitle()).isEqualTo(modifyDto.getTitle());
+        assertThat(response.getContents()).isEqualTo(modifyDto.getContents());
+        assertThat(response.getWriterEmail()).isEqualTo(loginMemberEmail);
     }
+
 
     @ParameterizedTest
     @ValueSource(strings = {" ", "", "   "})
     @WithMockUser(username = "k@naver.com", roles = "USER")
-    @DisplayName("게시물을 수정할 때, 제목이 없으면 400 에러를 반환한다")
+    @DisplayName("게시물을 수정할 때 제목이 없으면, 400 상태를 반환한다")
     void modifyPostFailNoTitle(String title) throws Exception {
         //given
-        PostWriteRequestDto dto =
-            new PostWriteRequestDto("제목", "내용");
-
-        //when then
-        MvcResult mvcResult = mockMvc.perform(post("/api/posts/").with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dto)))
-            .andReturn();
-        long postId = getCreatedResourceId(mvcResult);
+        Long postId = registerPost("title", "contents");
 
         PostModifyRequestDto modifyDto =
             new PostModifyRequestDto(title, "이렇게");
@@ -295,24 +263,33 @@ class PostControllerIntegrationTest {
             .andExpect(status().isBadRequest());
     }
 
+    @Test
+    @DisplayName("인증되지 않은 사용자가 게시물을 수정하려 하면, 401 상태를 반환한다")
+    void modifyPostFailNoLogin() throws Exception {
+        //given
+        UserDetails otherUser = makeUser(otherEmail, otherPwd);
+        Long postId = registerPost("title", "contents", otherUser);
+
+        PostModifyRequestDto modifyDto =
+            new PostModifyRequestDto("title", "이렇게");
+
+        //when then
+        mockMvc.perform(put("/api/posts/" + postId).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(modifyDto)))
+            .andExpect(status().isUnauthorized());
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {" ", "", "   "})
     @WithMockUser(username = "k@naver.com", roles = "USER")
-    @DisplayName("게시물을 수정할 때, 내용 없으면 400 에러를 반환한다")
+    @DisplayName("게시물을 수정할 때 내용이 없으면, 400 에러를 반환한다")
     void modifyPostFailNoContents(String contents) throws Exception {
         //given
-        PostWriteRequestDto dto =
-            new PostWriteRequestDto("제목", "내용");
-
-        //when then
-        MvcResult mvcResult = mockMvc.perform(post("/api/posts/").with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dto)))
-            .andReturn();
-        long postId = getCreatedResourceId(mvcResult);
+        Long postId = registerPost("title", "contents");
 
         PostModifyRequestDto modifyDto =
-            new PostModifyRequestDto("제목", contents);
+            new PostModifyRequestDto("바꿀거야", contents);
 
         mockMvc.perform(put("/api/posts/" + postId).with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -320,12 +297,6 @@ class PostControllerIntegrationTest {
             .andExpect(status().isBadRequest());
     }
 
-
-    private static long getCreatedResourceId(MvcResult mvcResult) {
-        String location = mvcResult.getResponse().getHeader("Location").substring(9);
-        String[] split = location.split("/");
-        return Long.parseLong(split[split.length - 1]);
-    }
 
     private UserDetails makeUser(String email, String pwd) {
         return new UserDetails() {
@@ -366,7 +337,7 @@ class PostControllerIntegrationTest {
         };
     }
 
-    private Long registerMember(String email, String  pwd) throws Exception {
+    private Long registerMember(String email, String pwd) throws Exception {
         SignUpRequestDto userDto = new SignUpRequestDto(email, pwd);
 
         MvcResult mvcResult = mockMvc.perform(post("/api/auth/signup").with(csrf())
@@ -376,6 +347,15 @@ class PostControllerIntegrationTest {
             .andExpect(header().string("Location", containsString("/api/members/")))
             .andReturn();
         return getCreatedResourceId(mvcResult);
+    }
+
+    private PostResponseDto findPostById(Long postId) throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get("/api/posts/" + postId))
+            .andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        PostResponseDto response =
+            objectMapper.readValue(contentAsString, PostResponseDto.class);
+        return response;
     }
 
     private Long registerPost(String title, String contents) throws Exception {
@@ -390,7 +370,21 @@ class PostControllerIntegrationTest {
         return getCreatedResourceId(mvcResult);
     }
 
-    private static long getCreatedResourceId(MvcResult mvcResult) {
+    private Long registerPost(String title, String contents, UserDetails u)
+        throws Exception {
+        PostWriteRequestDto dto = new PostWriteRequestDto(title, contents);
+
+        MvcResult mvcResult = mockMvc.perform(post("/api/posts").with(csrf())
+                .with(user(u))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().isCreated())
+            .andExpect(header().string("Location", containsString("/api/posts/")))
+            .andReturn();
+        return getCreatedResourceId(mvcResult);
+    }
+
+    private static Long getCreatedResourceId(MvcResult mvcResult) {
         String location = mvcResult.getResponse().getHeader("Location").substring(9);
         String[] split = location.split("/");
         return Long.parseLong(split[split.length - 1]);
