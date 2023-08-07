@@ -9,6 +9,9 @@
 ## 애플리케이션의 실행 방법 (엔드포인트 호출 방법 포함)
 
 ## 데이터베이스 테이블 구조
+- Members와 Member_Roles는 식별 관계입니다.
+
+<img width="771" alt="스크린샷 2023-08-07 오후 2 13 18" src="https://github.com/lordmyshepherd-edu/wanted-pre-onboardung-backend-selection-assignment/assets/67636607/26a8befd-ce44-42b3-a1af-30ab03746397">
 
 ## 구현한 API의 동작을 촬영한 데모 영상 링크
 
