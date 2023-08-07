@@ -26,6 +26,7 @@ import com.kimtaehoondev.board.post.application.dto.response.PostDetailDto;
 import com.kimtaehoondev.board.post.presentation.dto.PostModifyRequestDto;
 import com.kimtaehoondev.board.post.presentation.dto.PostWriteRequestDto;
 import com.kimtaehoondev.board.post.presentation.pageable.PageRequestFactory;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -311,6 +312,11 @@ class PostControllerTest {
             @Override
             public String getWriterEmail() {
                 return "k@naver.com";
+            }
+
+            @Override
+            public LocalDateTime getUpdatedAt() {
+                return LocalDateTime.of(2023,1,2,3,4);
             }
         };
     }

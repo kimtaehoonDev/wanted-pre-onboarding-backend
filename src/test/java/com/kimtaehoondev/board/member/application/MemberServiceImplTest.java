@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import com.kimtaehoondev.board.exception.impl.MemberNotFoundException;
 import com.kimtaehoondev.board.member.application.dto.MemberInfo;
 import com.kimtaehoondev.board.member.domain.repository.MemberRepository;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -29,6 +30,7 @@ class MemberServiceImplTest {
     void findMember() {
         Long memberId = 1L;
         String email = "ds@naver.com";
+        LocalDateTime updatedAt = LocalDateTime.of(2023, 1, 2, 3, 4);
 
         MemberInfo memberInfo = new MemberInfo() {
             @Override
@@ -40,6 +42,11 @@ class MemberServiceImplTest {
             public String getEmail() {
                 return email;
             }
+
+            @Override
+            public LocalDateTime getUpdatedAt() {
+                return updatedAt;
+            }
         };
 
         when(memberRepository.findById(memberId, MemberInfo.class))
@@ -48,6 +55,7 @@ class MemberServiceImplTest {
         MemberInfo member = memberService.getMember(memberId);
         assertThat(member.getId()).isEqualTo(memberId);
         assertThat(member.getEmail()).isEqualTo(email);
+        assertThat(member.getUpdatedAt()).isEqualTo(updatedAt);
     }
 
     @Test

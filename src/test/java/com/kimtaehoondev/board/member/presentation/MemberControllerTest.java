@@ -11,6 +11,7 @@ import com.kimtaehoondev.board.exception.impl.MemberNotFoundException;
 import com.kimtaehoondev.board.member.application.MemberService;
 import com.kimtaehoondev.board.member.application.dto.MemberInfo;
 import com.kimtaehoondev.board.member.presentation.dto.MemberResponse;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,8 @@ class MemberControllerTest {
     @DisplayName("사용자를 조회한다")
     void searchMember() throws Exception {
         Long memberId = 1L;
-        MemberInfo memberInfo = makeMemberInfo(memberId, "email");
+        MemberInfo memberInfo = makeMemberInfo(memberId, "email",
+            LocalDateTime.of(2023,1,2,3,4));
         when(memberService.getMember(memberId)).thenReturn(memberInfo);
 
         MvcResult mvcResult = mockMvc.perform(get("/api/members/" + memberId))
@@ -48,6 +50,7 @@ class MemberControllerTest {
 
         assertThat(response.getEmail()).isEqualTo(memberInfo.getEmail());
         assertThat(response.getId()).isEqualTo(memberInfo.getId());
+        assertThat(response.getUpdatedAt()).isEqualTo(memberInfo.getUpdatedAt());
     }
 
     @Test
@@ -66,7 +69,7 @@ class MemberControllerTest {
         assertThat(contentAsString).isEmpty();
     }
 
-    public MemberInfo makeMemberInfo(Long memberId, String email) {
+    public MemberInfo makeMemberInfo(Long memberId, String email, LocalDateTime updatedAt) {
         return new MemberInfo() {
             @Override
             public Long getId() {
@@ -76,6 +79,11 @@ class MemberControllerTest {
             @Override
             public String getEmail() {
                 return email;
+            }
+
+            @Override
+            public LocalDateTime getUpdatedAt() {
+                return updatedAt;
             }
         };
     }

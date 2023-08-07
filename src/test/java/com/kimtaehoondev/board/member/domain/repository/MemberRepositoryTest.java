@@ -50,9 +50,9 @@ class MemberRepositoryTest {
 
         MemberInfo result =
             memberRepository.findById(savedMember.getId(), MemberInfo.class).get();
-
         assertThat(result.getId()).isEqualTo(savedMember.getId());
         assertThat(result.getEmail()).isEqualTo(savedMember.getEmail());
+        assertThat(result.getUpdatedAt()).isNotNull();
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.kimtaehoondev.board.member.presentation.dto;
 
 import com.kimtaehoondev.board.member.application.dto.MemberInfo;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,8 +14,10 @@ import lombok.Setter;
 public class MemberResponse {
     private Long id;
     private String email;
+    private LocalDateTime updatedAt;
 
     public static MemberResponse from(MemberInfo memberInfo) {
-        return new MemberResponse(memberInfo.getId(), memberInfo.getEmail());
+        return new MemberResponse(memberInfo.getId(), memberInfo.getEmail(),
+            memberInfo.getUpdatedAt());
     }
 }

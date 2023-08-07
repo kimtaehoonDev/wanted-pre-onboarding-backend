@@ -1,5 +1,7 @@
 package com.kimtaehoondev.board.post.application.dto.response;
 
+import java.time.LocalDateTime;
+
 public interface PostDetailDto {
     Long getId();
 
@@ -8,4 +10,6 @@ public interface PostDetailDto {
     String getContents();
 
     String getWriterEmail();
+
+    LocalDateTime getUpdatedAt();
 }
