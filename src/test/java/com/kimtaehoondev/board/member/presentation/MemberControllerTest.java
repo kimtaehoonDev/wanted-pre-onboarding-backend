@@ -50,7 +50,6 @@ class MemberControllerTest {
 
         assertThat(response.getEmail()).isEqualTo(memberInfo.getEmail());
         assertThat(response.getId()).isEqualTo(memberInfo.getId());
-        assertThat(response.getUpdatedAt()).isEqualTo(memberInfo.getUpdatedAt());
     }
 
     @Test

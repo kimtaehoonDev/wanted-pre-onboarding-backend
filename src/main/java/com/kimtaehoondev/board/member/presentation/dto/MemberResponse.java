@@ -14,10 +14,8 @@ import lombok.Setter;
 public class MemberResponse {
     private Long id;
     private String email;
-    private LocalDateTime updatedAt;
 
     public static MemberResponse from(MemberInfo memberInfo) {
-        return new MemberResponse(memberInfo.getId(), memberInfo.getEmail(),
-            memberInfo.getUpdatedAt());
+        return new MemberResponse(memberInfo.getId(), memberInfo.getEmail());
     }
 }
