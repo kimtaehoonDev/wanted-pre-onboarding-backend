@@ -7,6 +7,38 @@
 ## ✅ 이름 : 김태훈
 
 ##  ✅ 애플리케이션의 실행 방법 (엔드포인트 호출 방법 포함)
+### Docker Compose를 사용하는 방법 
+Docker Compose를 사용해 애플리케이션을 실행할 수 있습니다.<br>
+> 데이터베이스는 Docker 환경에서 띄우지 않아 외부의 DB에 접근해야 합니다.<br>
+> 데이터베이스를 Docker에 띄우면 데이터를 관리하는데 어려움이 있다고 생각해 별도의 환경으로 구성했습니다.<br>
+> 환경변수를 사용해 외부 DB에 접근이 가능하도록 만들어줬습니다.
+
+애플리케이션을 실행하기 위한 순서는 다음과 같습니다.<br>
+1. 작업 디렉토리를 생성합니다.
+2. .env 파일을 생성합니다. 파일의 내용은 다음과 같습니다.
+   ```
+   DB_PASSWORD=[패스워드를 입력합니다]
+   DB_USERNAME=[계정명을 입력합니다]
+   DB_ADDRESS=[DB 주소를 입력합니다]
+   DB_DATABASENAME= [데이터베이스 이름을 입력합니다]
+   ```
+3. docker-compose.yml 파일을 생성합니다.
+   ```
+   version: '3'
+   services:
+    web:
+      image: kimtaehoondev/wanted-be-precourse:latest
+      ports:
+        - "80:8080"
+      env_file:
+        - .env
+      ```
+4. ```docker-compose up``` 명령을 실행하면 서버가 띄워진 걸 확인할 수 있습니다.<br>
+   엔드포인트들은 [API 명세](https://documenter.getpostman.com/view/24050935/2s9XxyStk2)를 확인해주세요.
+
+### 직접 배포
+Docker Compose를 사용하지 않고 직접 배포할 수도 있습니다.<br>
+
 1. ```git clone https://github.com/kimtaehoonDev/wanted-pre-onboarding-backend.git``` 명령을 실행합니다.
 2. ```/src/main/resources``` 경로에 application.yml 파일을 생성합니다.
    <br> application.yml 파일은 아래와 같이 작성합니다.
@@ -18,7 +50,7 @@
     
     spring:
       datasource:
-        url: jdbc:mysql://localhost:3306/[사용할 DB명]
+        url: jdbc:mysql://localhost:[사용할 포트번호]/[사용할 DB명]
         username: [사용할 계정명]
         password: [사용할 비밀번호]
         driver-class-name: com.mysql.cj.jdbc.Driver
@@ -38,7 +70,7 @@
           force: true
     
     ```
-3. 2와 동일한 방식으로 ```/src/main/resources``` 경로에 application-test.yml을 만들어줍니다. 
+3. 2와 동일한 방식으로 ```/src/main/resources``` 경로에 application-test.yml을 만들어줍니다.
    >**❗️ ️application.yml에서 사용한 DB와 다른 DB를 사용해주세요!!!**
    <br>application-test는 테스트 환경을 분리하기 위해 사용하기 때문입니다.
    <br>동일한 DB를 쓰면 분리한 이유가 없어집니다.
@@ -55,10 +87,12 @@
         "pwd": "[비밀번호를 입력합니다]"
     }
     ```
-9. 그 외 사용가능한 엔드포인트들은 바로 하단의 API 명세에서 확인 가능합니다. 
+9. 그 외 사용가능한 엔드포인트들은 바로 하단의 API 명세에서 확인 가능합니다.
+
 
 ## ✅ [API 명세(request/response 포함)](https://documenter.getpostman.com/view/24050935/2s9XxyStk2)
 링크를 확인해주세요.<br>
+
 
 노란색 동그라미 부분을 눌러 여러 응답값을 확인할 수 있습니다.
 
@@ -139,7 +173,7 @@
 #### Soft Delete를 사용했습니다.
   - MySQL 등 RDB는 데이터를 삭제할 때 인덱스를 재구성해야해 성능상 문제가 생길 수 있기 때문입니다.
 
-
-## ❌ AWS 
-
-## ❌ Docker
+## AWS 환경
+API 주소 : http://3.35.21.130 <br>
+단순하게 API 서버와 DB 서버만을 분리했습니다.<br>
+<img width="670" alt="스크린샷 2023-08-07 오후 11 07 12" src="https://github.com/kimtaehoonDev/Mini-Dooray/assets/67636607/898f1e9d-095a-4539-a694-d6d7a2971654">
