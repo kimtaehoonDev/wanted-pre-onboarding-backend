@@ -7,6 +7,54 @@
 ## 이름 : 김태훈
 
 ## 애플리케이션의 실행 방법 (엔드포인트 호출 방법 포함)
+1. ```git clone https://github.com/kimtaehoonDev/wanted-pre-onboarding-backend.git``` 명령을 실행합니다.
+2. ```/src/main/resources``` 경로에 application.yml 파일을 생성합니다.
+   <br> application.yml 파일은 아래와 같이 작성합니다.
+    ```
+    jwt:
+      secret: VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa
+      access-token-expires: 1800000 # 30분 (30 * 60 * 1000)
+      refresh-token-expires: 604800000 # 일주일 (7 * 24 * 60 * 1000)
+    
+    spring:
+      datasource:
+        url: jdbc:mysql://localhost:3306/[사용할 DB명]
+        username: [사용할 계정명]
+        password: [사용할 비밀번호]
+        driver-class-name: com.mysql.cj.jdbc.Driver
+      jpa:
+        hibernate:
+          ddl-auto: create
+        properties:
+          hibernate:
+            dialect: org.hibernate.dialect.MySQL8Dialect
+          show-sql: false
+    
+    server:
+      servlet:
+        encoding:
+          charset: UTF-8
+          enabled: true
+          force: true
+    
+    ```
+3. 2와 동일한 방식으로 ```/src/main/resources``` 경로에 application-test.yml을 만들어줍니다. 
+   >**❗️ ️application.yml에서 사용한 DB와 다른 DB를 사용해주세요!!!**
+   <br>application-test는 테스트 환경을 분리하기 위해 사용하기 때문입니다.
+   <br>동일한 DB를 쓰면 분리한 이유가 없어집니다.
+4. ```./gradlew test``` 명령어로 테스트가 잘 동작하는지 확인합니다.
+5. ```./graldew build``` 명령어로 빌드를 합니다.
+   > 빌드 결과물은 ```/build/libs``` 경로에 ```board-0.0.1-SNAPSHOT.jar``` 이름으로 생성됩니다.
+6. ```java -jar 빌드결과물``` 명령어로 서버를 실행합니다.
+7. Postman 등 HTTP 요청을 보낼 수 있는 프로그램에 접속합니다. (엔드포인트 호출)
+8. ```POST localhost:8080/api/auth/signup``` URL로 요청을 보냅니다
+    - Body에는 JSON 양식으로 아래와 같은 요청을 보냅니다.
+    ```
+    {
+        "email": "[이메일을 입력합니다]",
+        "pwd": "[비밀번호를 입력합니다]"
+    }
+    ```
 
 ## 데이터베이스 테이블 구조
 - Members와 Member_Roles는 식별 관계입니다.
@@ -88,3 +136,5 @@
 노란색 동그라미 부분을 눌러 여러 응답값을 확인할 수 있습니다.
 
 <img width="1157" alt="스크린샷 2023-08-07 오후 1 12 57" src="https://github.com/kimtaehoonDev/Mini-Dooray/assets/67636607/ced5c049-366b-47a0-ae64-479802449c0f">
+
+## AWS 
