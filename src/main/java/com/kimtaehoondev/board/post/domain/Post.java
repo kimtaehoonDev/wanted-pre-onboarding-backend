@@ -1,5 +1,6 @@
 package com.kimtaehoondev.board.post.domain;
 
+import com.kimtaehoondev.board.BaseEntity;
 import com.kimtaehoondev.board.member.domain.Member;
 import java.util.Objects;
 import javax.persistence.Column;
@@ -24,7 +25,7 @@ import org.hibernate.annotations.Where;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @SQLDelete(sql = "UPDATE posts SET deleted = true where id = ?")
 @Where(clause = "deleted = false")
-public class Post {
+public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
