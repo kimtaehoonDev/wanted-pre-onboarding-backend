@@ -1,7 +1,7 @@
 ### custom
 application.yml
 application-prod.yml
-
+application-test.yml
 
 HELP.md
 .gradle

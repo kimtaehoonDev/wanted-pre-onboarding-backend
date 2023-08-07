@@ -39,7 +39,7 @@ public class Post extends BaseEntity {
 
 
     @ManyToOne
-    @JoinColumn(name = "WRITER_ID")
+    @JoinColumn(name = "writer_id")
     private Member writer;
 
     //역정규화 컬럼
