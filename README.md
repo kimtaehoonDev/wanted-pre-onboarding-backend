@@ -6,7 +6,7 @@
 
 ## ✅ 이름 : 김태훈
 
-##  ❌ 애플리케이션의 실행 방법 (엔드포인트 호출 방법 포함)
+##  ✅ 애플리케이션의 실행 방법 (엔드포인트 호출 방법 포함)
 1. ```git clone https://github.com/kimtaehoonDev/wanted-pre-onboarding-backend.git``` 명령을 실행합니다.
 2. ```/src/main/resources``` 경로에 application.yml 파일을 생성합니다.
    <br> application.yml 파일은 아래와 같이 작성합니다.
@@ -55,7 +55,7 @@
         "pwd": "[비밀번호를 입력합니다]"
     }
     ```
-9. 그 외 사용가능한 엔드포인트들은 바로 하단에 API 명세에서 확인 가능합니다. 
+9. 그 외 사용가능한 엔드포인트들은 바로 하단의 API 명세에서 확인 가능합니다. 
 
 ## ✅ [API 명세(request/response 포함)](https://documenter.getpostman.com/view/24050935/2s9XxyStk2)
 링크를 확인해주세요.<br>
