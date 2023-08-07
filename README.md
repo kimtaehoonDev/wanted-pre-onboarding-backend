@@ -79,4 +79,9 @@
 #### Soft Delete를 사용했습니다.
   - MySQL 등 RDB는 데이터를 삭제할 때 인덱스를 재구성해야해 성능상 문제가 생길 수 있기 때문입니다.
 
-## API 명세(request/response 포함)
+## [API 명세(request/response 포함)](https://documenter.getpostman.com/view/24050935/2s9XxyStk2)
+링크를 확인해주세요.<br>
+
+노란색 동그라미 부분을 눌러 여러 응답값을 확인할 수 있습니다.
+
+<img width="1157" alt="스크린샷 2023-08-07 오후 1 12 57" src="https://github.com/kimtaehoonDev/Mini-Dooray/assets/67636607/ced5c049-366b-47a0-ae64-479802449c0f">
