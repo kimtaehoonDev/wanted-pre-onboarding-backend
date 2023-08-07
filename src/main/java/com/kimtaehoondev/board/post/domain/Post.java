@@ -23,7 +23,7 @@ import org.hibernate.annotations.Where;
 @Table(name = "posts")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@SQLDelete(sql = "UPDATE posts SET deleted = true where id = ?")
+@SQLDelete(sql = "UPDATE posts SET deleted = true where post_id = ?")
 @Where(clause = "deleted = false")
 public class Post extends BaseEntity {
     @Id
