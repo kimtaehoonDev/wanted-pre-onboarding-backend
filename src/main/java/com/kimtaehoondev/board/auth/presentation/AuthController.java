@@ -4,6 +4,7 @@ import com.kimtaehoondev.board.auth.application.AuthService;
 import com.kimtaehoondev.board.auth.domain.TokenInfo;
 import com.kimtaehoondev.board.auth.presentation.dto.LoginRequestDto;
 import com.kimtaehoondev.board.auth.presentation.dto.SignUpRequestDto;
+import com.kimtaehoondev.board.auth.presentation.dto.SignUpResponseDto;
 import com.kimtaehoondev.board.exception.impl.EmailDuplicatedException;
 import com.kimtaehoondev.board.exception.impl.LoginInfoIncorrectException;
 import java.net.URI;
@@ -45,8 +46,7 @@ public class AuthController {
                 .replacePath("/api/members/" + savedId)
                 .build()
                 .toUri();
-
-            return ResponseEntity.created(location).body(savedId);
+            return ResponseEntity.created(location).body(new SignUpResponseDto(savedId));
         } catch (EmailDuplicatedException e) {
             Map<String, String> errors = getBindingError(e);
             return ResponseEntity.badRequest().body(errors);
