@@ -1,4 +1,4 @@
-package com.kimtaehoondev.board;
+package com.kimtaehoondev.board.exception;
 
 import com.kimtaehoondev.board.exception.impl.MemberNotFoundException;
 import com.kimtaehoondev.board.exception.impl.PostNotFoundException;
