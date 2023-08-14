@@ -1,8 +1,10 @@
 package com.kimtaehoondev.board.auth.application;
 
 import com.kimtaehoondev.board.member.domain.Member;
+import com.kimtaehoondev.board.member.domain.SecurityMember;
 import com.kimtaehoondev.board.member.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,10 +27,14 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     private UserDetails createUserDetails(Member member) {
+        SecurityMember securityMember = new SecurityMember(member);
+
         return User.builder()
-            .username(member.getUsername())
-            .password(member.getPassword())
-            .roles(member.getRoles().toArray(new String[0]))
+            .username(securityMember.getUsername())
+            .password(securityMember.getPassword())
+            .roles(securityMember.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toArray(String[]::new))
             .build();
     }
 }
