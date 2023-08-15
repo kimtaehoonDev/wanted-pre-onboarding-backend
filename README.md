@@ -92,11 +92,73 @@ Docker Compose를 사용하지 않고 직접 배포할 수도 있습니다.<br>
         "pwd": "[비밀번호를 입력합니다]"
     }
     ```
-9. 그 외 사용가능한 엔드포인트들은 바로 하단의 API 명세에서 확인 가능합니다.
+9.  사용가능한 엔드포인트들은 바로 하단에 기입해두었습니다.
 
+## 엔드포인트
 
+### 회원가입
+```bash
+curl -X POST -H "Content-Type: application/json" 'http://3.35.21.130/api/auth/signup' \
+-d '{
+    "email": "k@naver.com",
+    "pwd": "12345687"
+}'
+```
+### 로그인
+```bash
+curl -X POST -H "Content-Type: application/json" 'http://3.35.21.130/api/auth/login' \
+-d '{
+    "email": "k@naver.com",
+    "pwd": "12345687"
+}'
+```
+
+### 회원 조회
+```bash
+curl --location 'http://3.35.21.130/api/members/1'
+```
+### 게시물 등록
+로그인 결과 나온 access token을 사용해 Authorization 헤더를 변경합니다.<br>
+```Authorization: Bearer [access token]```
+
+```bash
+curl -X POST -H "Content-Type: application/json" 'http://3.35.21.130/api/posts' \
+-H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrQG5hdmVyLmNvbSIsImF1dGgiOiJST0xFX1VTRVIiLCJleHAiOjE2OTIwNjk4MDN9.U-6ZiasauKdBnqO9Gjq69Qo-Ek-Ai_jAfUq0NPoMzBw' \
+-d '{
+    "title":"내용입니다",
+    "contents":"내용은 이렇게 씁니다"
+}'
+```
+
+### 게시물 단건 조회
+```bash
+curl --location 'http://3.35.21.130/api/posts/2'
+```
+
+### 게시물 목록 조회
+```bash
+curl --location 'http://3.35.21.130/api/posts'
+```
+
+### 게시물 수정
+```bash
+curl -X PUT -H "Content-Type: application/json" 'http://3.35.21.130/api/posts/2' \
+-H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrQG5hdmVyLmNvbSIsImF1dGgiOiJST0xFX1VTRVIiLCJleHAiOjE2OTIwNjk4MDN9.U-6ZiasauKdBnqO9Gjq69Qo-Ek-Ai_jAfUq0NPoMzBw' \
+-d '{
+    "title":"바꿀 제목",
+    "contents":"변경될 제목"
+}'
+```
+
+### 게시물 삭제
+```bash
+curl -X DELETE -H "Content-Type: application/json" 'http://3.35.21.130/api/posts/2' \
+-H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrQG5hdmVyLmNvbSIsImF1dGgiOiJST0xFX1VTRVIiLCJleHAiOjE2OTIwNjk4MDN9.U-6ZiasauKdBnqO9Gjq69Qo-Ek-Ai_jAfUq0NPoMzBw' \
+```
 ## ✅ [API 명세(request/response 포함)](https://documenter.getpostman.com/view/24050935/2s9XxyStk2)
 링크를 확인해주세요.<br>
+curl 예시 코드에 ```Content-Type: application/json``` 헤더가 누락되어 동작하지 않습니다.<br>
+요청, 응답의 양식을 확인하는 용도로만 써주시고, 실제 요청은 위에 적은 엔드포인트를 참고해주세요.<br>
 
 
 노란색 동그라미 부분을 눌러 여러 응답값을 확인할 수 있습니다.
