@@ -247,4 +247,4 @@ curl 예시 코드에 ```Content-Type: application/json``` 헤더가 누락되�
 ## AWS 환경
 API 주소 : http://3.35.21.130 <br>
 단순하게 API 서버와 DB 서버만을 분리했습니다.<br>
-<img width="670" alt="스크린샷 2023-08-07 오후 11 07 12" src="https://github.com/kimtaehoonDev/Mini-Dooray/assets/67636607/898f1e9d-095a-4539-a694-d6d7a2971654">
+<img width="690" alt="스크린샷 2023-08-15 오후 12 16 40" src="https://github.com/lordmyshepherd-edu/wanted-pre-onboardung-backend-selection-assignment/assets/67636607/b7b1d393-005e-422c-b61f-f503e533057f">
